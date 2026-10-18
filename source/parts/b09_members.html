@@ -1,0 +1,205 @@
+<!-- ================= MEMBER DESIGN ================= -->
+<section class="stage" id="members" data-stage="members">
+  <header>
+    <h2>Member design</h2>
+    <p>Analysis tells you the forces. Design tells you whether the members can carry them. These three sessions build the Japanese allowable stress checks (許容応力度設計) into Grasshopper: buckling, bending with axial force, and load combinations, ending in a check report you could hand to a senior engineer.</p>
+  </header>
+
+  <article class="session" id="m1">
+    <h3><span class="sn">{{sn}}</span>Column buckling</h3>
+    <p class="goal">By the end you can work out a column's allowable compressive stress fc from its slenderness, and find the lightest section that carries a load.</p>
+
+    <h4>Idea</h4>
+    <p>A slender member in compression fails by buckling (座屈) sideways long before the steel yields. How slender it is depends on two things:</p>
+    <ul>
+      <li>The <b>buckling length</b> lk (座屈長さ) = K × L, where K depends on how the ends are held. In theory K is 0.5 with both ends fixed, 0.7 with one fixed and one pinned, 1.0 with both pinned, and 2.0 for a cantilever.</li>
+      <li>The <b>radius of gyration</b> i (断面二次半径) of the section. An H-section has a large ix and a small iy, so unless it is braced it buckles about its weak axis.</li>
+    </ul>
+    <p>The slenderness ratio (細長比) is λ = lk / i. Japanese practice for steel with F = 235 N/mm² then gives the long-term allowable compressive stress fc:</p>
+    <div class="tbl">
+      <table>
+        <tbody>
+          <tr><td>Critical slenderness (限界細長比)</td><td class="n">Λ = √(π²E / 0.6F) ≈ 120</td></tr>
+          <tr><td>When λ ≤ Λ</td><td class="n">fc = {1 − 0.4(λ/Λ)²} F / ν,  ν = 3/2 + 2/3 (λ/Λ)²</td></tr>
+          <tr><td>When λ &gt; Λ</td><td class="n">fc = 0.277 F / (λ/Λ)²</td></tr>
+          <tr><td>Short-term</td><td>1.5 times the long-term value</td></tr>
+          <tr><td>Slenderness limit</td><td>λ ≤ 200 for columns and λ ≤ 250 for other compression members (Building Standard Law Enforcement Order, Article 65)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Example</h4>
+    <p>An H-250×250×9×14 column, 4 m tall, pinned at both ends, carries N = 600 kN long-term. iy = 6.32 cm and A = 91.43 cm².</p>
+    <ol class="steps">
+      <li>λ = 400 / 6.32 = 63.3, below Λ.</li>
+      <li>λ/Λ = 0.528, so ν = 1.5 + 0.667 × 0.279 = 1.686.</li>
+      <li>fc = (1 − 0.4 × 0.279) × 235 / 1.686 = 123.8 N/mm².</li>
+      <li>σc = 600,000 / 9,143 = 65.6 N/mm², so the 検定比 is 65.6 / 123.8 = 0.53.</li>
+    </ol>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="m1"></div>
+      <figcaption>The red curve is fc against λ. Your column is the green dot, at its stress. It passes while the dot is under the curve. Change the ends to fixed, fixed and watch the dot slide left.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Keep a small section table in a panel or a CSV file read with <b>Read File</b>: name, A, ix, iy, Zx. Pick a row with List Item and split it into numbers with <b>Text Split</b> (Sets, Text).</li>
+      <li>Buckling length: Multiplication of L and K. Slenderness: Division by iy (and by ix), then <b>Maximum</b> (Maths, Util) of the two.</li>
+      <li>Two Expressions, one for each fc formula, with inputs λ, Λ and F.</li>
+      <li><b>Larger Than</b> compares λ with Λ. <b>Pick'n'Choose</b> (Sets, List) uses that result to pick the right formula: 0 picks the first stream, 1 the second.</li>
+      <li>σc = N / A, then the ratio σc / fc. Show it in a panel, and colour the column with Custom Preview when it is over 1.</li>
+    </ol>
+
+    <div class="watch">
+      <h4>Watch out: theoretical K values</h4>
+      <p>The K values above are the theoretical ones. Real ends are never perfectly fixed, so design guides often use larger values, and your office will have its own rule. In a moment frame, the column's buckling length is often taken as the storey height. Ask before you choose.</p>
+    </div>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="m1-1"><q>The same column changes from pinned at both ends to fixed at both ends. What happens to fc?</q>
+    <o correct>It goes up, because the buckling length halves</o><o>It goes down</o><o>It stays the same; only the load matters</o>
+    <why>lk halves, so λ halves, and a stockier column has a higher allowable stress: from 123.8 to 147.7 N/mm² in the example.</why></drill>
+    <drill id="m1-2"><q>A member has λ = 130. Which formula gives fc?</q>
+    <o>{1 − 0.4(λ/Λ)²} F / ν</o><o correct>0.277 F / (λ/Λ)²</o><o>F / 1.5</o>
+    <why>130 is above Λ ≈ 120, so the member is in the elastic buckling range and the second formula applies.</why></drill>
+    <drill id="m1-3"><q>An unbraced H-section column. Which radius of gyration do you use?</q>
+    <o>ix, the larger one</o><o correct>iy, the smaller one</o><o>Their average</o>
+    <why>The column buckles the easiest way, about the weak axis. Use the larger slenderness, which comes from iy unless the weak axis is braced at closer spacing.</why></drill>
+    <bug id="m1-b" def="bug_m1" answer="ix|dv"><q>A 4 m pinned H-300×300 column is shown with λ = 30.5 and looks very safe. Click the component or panel that makes it unsafe.</q>
+    <hint>Which axis does an unbraced H-section buckle about?</hint>
+    <why>The length is divided by ix, the strong-axis radius. About the weak axis λ = 400 / 7.55 = 53, which gives a lower fc. Divide by iy, or take the larger of the two slendernesses.</why></bug>
+    <challenge id="m1-c" title="The lightest column for 900 kN">
+    <task><p>A 4 m column, pinned at both ends, carries 900 kN long-term. From the nine H-sections used in this course, find the lightest one that passes.</p></task>
+    <done><li>Your definition checks every section at once and lists those that pass.</li><li>It names the lightest passing section.</li></done>
+    <hint>Put all nine sections in lists and run the check on every one together. Dispatch with Smaller Than (ratio below 1) keeps the ones that pass.</hint>
+    <hint>Sort the passing sections by area with Sort List (it can sort a second list along with the keys) and take the first.</hint>
+    <solution><ol><li>Three lists from your table: names, A and iy.</li><li>λ = 400 / iy for all nine at once, fc with the two formulas and Pick'n'Choose, ratio = 900,000 / (A × 100) / fc.</li><li>Dispatch on ratio &lt; 1, then Sort List by A.</li><li>The answer is H-250×250×9×14, with a ratio of 0.80. H-400×200×8×13 has less area, 83.37 cm² against 91.43, but it fails at 1.09 because its iy is only 4.56 cm.</li></ol></solution>
+    </challenge>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-m1-a" data-id="m1-a"><span>I can work out fc by hand for a given λ</span></label></li>
+      <li><label><input type="checkbox" id="t-m1-b" data-id="m1-b"><span>My definition picks the right fc formula automatically</span></label></li>
+      <li><label><input type="checkbox" id="t-m1-c" data-id="m1-c"><span>I can explain why the weak axis usually governs</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="m2">
+    <h3><span class="sn">{{sn}}</span>Bending plus axial force</h3>
+    <p class="goal">By the end you can check a column that carries both axial force and bending, and say what the check assumes.</p>
+
+    <h4>Idea</h4>
+    <p>A frame column carries axial force from the floors above and bending from the frame action. The two stresses add up, so the check adds the two ratios (組合せ応力):</p>
+    <div class="tbl"><table><tbody>
+      <tr><td>Compression and bending</td><td class="n">σc / fc + σb / fb ≤ 1</td></tr>
+      <tr><td>σc</td><td class="n">N / A</td></tr>
+      <tr><td>σb</td><td class="n">M / Z</td></tr>
+    </tbody></table></div>
+    <p>fb, the allowable bending stress, equals ft = F / 1.5 only when the compression flange cannot buckle sideways. An unbraced H-section can twist and buckle sideways under bending (横座屈), and the code then gives a smaller fb. Square hollow sections (角形鋼管) do not suffer this, and they are equally stiff in both directions. That is one reason Japanese moment-frame columns are usually square tubes.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="m2"></div>
+      <figcaption>The starting values fail by 3%. Find two different changes that make the column pass. The green triangle is where the sum is 1 or less.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Take the column forces from Karamba's <b>Beam Forces</b>: N and the moment M about the strong axis, at both ends of each element.</li>
+      <li>σc = N / A and σb = M / Z with Division. Watch the units: kN and cm² give kN/cm²; multiply by 10 for N/mm².</li>
+      <li>Reuse your fc from the last session. fb = 156 for a braced member.</li>
+      <li>Add the two ratios and take the largest along the member with Sort List or Bounds.</li>
+    </ol>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="m2-1"><q>σc / fc = 0.45 and σb / fb = 0.40. Does the member pass?</q>
+    <o correct>Yes, the sum is 0.85</o><o>No, because 0.45 + 0.40 is close to 1</o><o>You cannot tell without the load term</o>
+    <why>The check is the sum, 0.85, which is below 1.</why></drill>
+    <drill id="m2-2"><q>The same stresses are short-term instead. What is the ratio now?</q>
+    <o>0.85</o><o correct>About 0.57</o><o>About 1.28</o>
+    <why>Short-term allowables are 1.5 times larger, so the ratio drops to 0.85 / 1.5 = 0.57.</why></drill>
+    <drill id="m2-3"><q>Why do Japanese moment frames usually use square tube columns rather than H-sections?</q>
+    <o correct>No lateral-torsional buckling, and the same stiffness in both directions</o><o>They are always lighter</o><o>The law requires them</o>
+    <why>A closed square section resists twisting, so fb stays at its full value, and it is equally strong in X and Y, which suits frames in both directions.</why></drill>
+    <challenge id="m2-c" title="Check every column of a frame">
+    <task><p>For the multi-storey frame from Session {{n:s12}}, analysed in Karamba with gravity and lateral load, compute σc/fc + σb/fb for every column element and colour the columns by it.</p></task>
+    <done><li>One ratio per column element.</li><li>Columns over 1.0 are drawn in a warning colour.</li><li>A panel shows the worst column and its ratio.</li></done>
+    <hint>Select Elements (or Ids such as <code>col</code>) gives you only the column elements' forces from Beam Forces.</hint>
+    <hint><b>Gradient</b> (Params, Input) maps a number from 0 to 1 to a colour for Custom Preview.</hint>
+    <solution><ol><li>Give the columns the Id <code>col</code> in Line to Beam. Beam Forces with Beams|Ids set to <code>col</code>.</li><li>N and M at both ends: take the larger |M| per element.</li><li>Ratio per element as in the session; Gradient with limits 0 and 1.2 into Custom Preview.</li><li>Sort List with the ratios as keys and the element names as values; the last item is the worst column.</li></ol></solution>
+    </challenge>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-m2-a" data-id="m2-a"><span>I can check a beam-column by hand</span></label></li>
+      <li><label><input type="checkbox" id="t-m2-b" data-id="m2-b"><span>I can say when fb = F / 1.5 is allowed and when it is not</span></label></li>
+      <li><label><input type="checkbox" id="t-m2-c" data-id="m2-c"><span>My definition computes the combined ratio from Karamba's forces</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="m3">
+    <h3><span class="sn">{{sn}}</span>Load combinations and the check report</h3>
+    <p class="goal">By the end your definition checks long-term and short-term combinations, drift and deflection, and writes a one-panel report.</p>
+
+    <h4>Idea</h4>
+    <p>Allowable stress design checks combinations of loads (荷重の組合せ), each against its own allowable stress:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Combination</th><th>Loads</th><th>Allowable</th></tr></thead>
+      <tbody>
+        <tr><td>Long-term (長期)</td><td>G + P: dead and live load</td><td>Long-term, such as F / 1.5</td></tr>
+        <tr><td>Short-term (短期), earthquake</td><td>G + P + K and G + P − K</td><td>1.5 × long-term</td></tr>
+        <tr><td>Short-term, snow or wind</td><td>G + P + S, G + P + W</td><td>1.5 × long-term</td></tr>
+      </tbody>
+    </table></div>
+    <p>K appears with both signs because an earthquake can come from either side. Snow rules differ in heavy-snow areas (多雪区域), so check the rules for your site. On top of the stress checks come the stiffness checks: storey drift angle under K, normally 1/200 or less, and beam deflection under long-term load, where many offices aim for span / 300.</p>
+    <p>A linear analysis can be added up. Put G in load case 0 and K in load case 1, and the result of G + K is the sum of the two cases. You do not need to run the analysis again for each combination.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="m3"></div>
+      <figcaption>The yellow panel is the report: one line per member with its worst ratio in each combination, then drift and deflection. Raise K until something fails, then change one section to fix it.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Give the vertical loads LCase 0 and the lateral loads LCase 1.</li>
+      <li>Beam Forces once with LCase 0 and once with LCase 1. Combine them with Addition and Subtraction: G + K and G − K.</li>
+      <li>Ratios for each combination. Divide the short-term ones by 1.5, or multiply the allowables.</li>
+      <li>Drift: Nodal Displacements for LCase 1 at beam level, divided by the storey height.</li>
+      <li>Report: <b>Format</b> (Sets, Text) builds a line such as <code>Left column  0.71  0.93  OK</code>. Merge the lines into one panel.</li>
+    </ol>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="m3-1"><q>Why check G − K as well as G + K?</q>
+    <o correct>An earthquake can push the building from either side</o><o>To check the building upside down</o><o>Because the law asks for every possible sum</o>
+    <why>Seismic load reverses, so a column that gains compression in G + K loses it in G − K, and the worst case can be either.</why></drill>
+    <drill id="m3-2"><q>σ from G is 90 N/mm² and σ from K is 120 N/mm². Long-term f = 156 N/mm². What is the short-term ratio for G + K?</q>
+    <o>1.35</o><o correct>0.90</o><o>0.58</o>
+    <why>(90 + 120) / (1.5 × 156) = 210 / 234 = 0.90.</why></drill>
+    <drill id="m3-3"><q>A 4 m storey sways 18 mm under K. Does it meet 1/200?</q>
+    <o correct>Yes, it is 1/222</o><o>No, it is 1/180</o><o>Only if the bases are fixed</o>
+    <why>4,000 / 18 = 222, so the drift angle is 1/222, which is less than 1/200.</why></drill>
+    <bug id="m3-b" def="bug_m3" answer="k|mu"><q>The long-term check for case G passes with 0.77, but by hand σ = 180 N/mm² fails against 156. Click the component or panel that causes it.</q>
+    <hint>Which allowable stress belongs to a long-term combination?</hint>
+    <why>The long-term allowable is multiplied by 1.5, which is only correct for short-term combinations. 180 / 156 = 1.15, so the member fails. Remove the factor from the long-term branch.</why></bug>
+    <challenge id="m3-c" title="Add a snow case">
+    <task><p>Add a snow load S on the beam as load case 2, with the combination G + S checked against short-term allowables, and add a line for it to your report.</p></task>
+    <done><li>The report has a G + S column for every member.</li><li>The worst combination is named for each member.</li></done>
+    <hint>Use the same pattern: a third Beam Forces with LCase 2, then Addition with case 0.</hint>
+    <solution><ol><li>A line load on the beam with LCase 2.</li><li>Beam Forces for LCase 2, Addition with case 0, ratio against 1.5 × long-term.</li><li>Extend Format to five numbers, and use List Item on the sorted combination names to name the worst.</li></ol></solution>
+    </challenge>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-m3-a" data-id="m3-a"><span>My definition checks G, G + K and G − K with the right allowables</span></label></li>
+      <li><label><input type="checkbox" id="t-m3-b" data-id="m3-b"><span>It checks drift and beam deflection too</span></label></li>
+      <li><label><input type="checkbox" id="t-m3-c" data-id="m3-c"><span>All the results appear in one readable panel</span></label></li>
+    </ul>
+  </article>
+</section>
+

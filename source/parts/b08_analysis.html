@@ -1,0 +1,201 @@
+<!-- ================= ANALYSIS ================= -->
+<section class="stage" id="analysis" data-stage="analysis">
+  <header>
+    <h2>Structural analysis</h2>
+    <p>Karamba3D is a finite element plug-in that lives inside Grasshopper. Your lines become beams, you add supports and loads, and results come back as numbers and colours that update when a slider moves. Four sessions take you from one beam to a frame, always with a hand check.</p>
+  </header>
+
+  <article class="session" id="s16">
+    <h3><span class="sn">{{sn}}</span>Install Karamba3D and analyse one beam</h3>
+    <p class="goal">By the end Karamba3D runs on your Mac and its deflection for a simple beam agrees with 5wL⁴/384EI.</p>
+
+    <h4>Idea</h4>
+    <p>Every Karamba model is assembled from the same parts, in the same order: elements, supports, loads, then <b>Assemble Model</b>, then <b>Analyze</b>, then a view. If you give no cross section or material, Karamba uses a default for each, so always set them yourself.</p>
+
+    <div class="note">
+      <p><b>Your Mac and Karamba3D.</b> The current version, 3.1, runs on Windows only. On a Mac you install version 2.2, and on an Apple Silicon Mac it only loads when Rhino is opened in Rosetta mode. This session uses 2.2. On a Windows PC at a lab or office you will meet 3.1: the workflow is the same idea, but some component names and options differ, so keep the 3.1 manual open the first time.</p>
+    </div>
+
+    <h4>Example: install on your Mac</h4>
+    <ol class="steps">
+      <li>Quit Rhino. In Finder open Applications, select Rhino 8, choose File, Get Info, and tick <b>Open using Rosetta</b>.</li>
+      <li>Open Rhino, type <code>PackageManager</code>, search for Karamba3D, choose version 2.2 and install it. Restart Rhino.</li>
+      <li>Open Grasshopper. A Karamba3D tab is now in the component bar.</li>
+    </ol>
+    <p>Without a licence Karamba runs in one of two modes. The free mode has no element limit but leaves out some components. The manual marks those with a blue diamond, and Utilization of Elements is one of them. The full-feature trial has everything but stops at 20 beams and 50 shells. A student licence costs €30 plus VAT and removes both limits.</p>
+
+    <h4>Example: the chain for one beam</h4>
+    <figure class="def">
+      <div data-def="karamba"></div>
+      <figcaption>Part one: build the model. Elements, supports and loads all end in Assemble Model. Port names are shortened here. In Grasshopper, hover over any port to read its full name and its unit.</figcaption>
+    </figure>
+    <figure class="def">
+      <div data-def="karamba2"></div>
+      <figcaption>Part two: solve and look. Analyze passes the solved model on to the view components and reports the largest displacement.</figcaption>
+    </figure>
+    <ol class="steps">
+      <li><b>Line</b> from (0, 0, 0) to (6, 0, 0), then <b>Line to Beam</b>.</li>
+      <li><b>Cross Sections</b>, set to I-Profile in its drop-down: height 30, flange width 15, flange thickness 0.9, web thickness 0.65. Karamba takes section sizes in <b>centimetres</b>. That is H-300×150×6.5×9.</li>
+      <li><b>Support</b> at the start point with Tx, Ty, Tz and Rx switched on, and a second Support at the end point with Ty and Tz. A button is on when it is black. Six restraints is the minimum for anything in 3D, and Rx stops the beam spinning about its own axis.</li>
+      <li><b>Loads</b>: a uniform line load on the beam with the vector (0, 0, −10), which is 10 kN/m downwards. In 2.2 line loads are in the <b>Beam Loads</b> component as the Block type. Leave its start and end at 0 and 1 so the load covers the whole span.</li>
+      <li><b>Assemble Model</b>, then <b>Analyze</b>. Hover over the outputs of Analyze to find the maximum displacement, and put a panel on it.</li>
+      <li><b>ModelView</b> to scale the deformation, and <b>BeamView</b> to draw the bending moment.</li>
+    </ol>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s16"></div>
+      <figcaption>The hand calculation for the same beam, with JIS table values for the section and E = 205,000 N/mm². Use it to predict the Karamba result before you run it.</figcaption>
+    </figure>
+
+    <div class="note">
+      <p><b>Why Karamba will not match to the last digit.</b> Its I-Profile has no root fillets, so its I is about 6,930 cm⁴ against 7,210 in the JIS table, which adds about 4% to the deflection. Its library steel follows Eurocode, with E = 210,000 N/mm² against the 205,000 used in Japan, which takes about 2% off. It may also include a little shear deformation that the hand formula leaves out. Agreement within a few percent means your model is right.</p>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s16-a" data-id="s16-a"><span>Karamba3D 2.2 is installed and its tab shows in Grasshopper</span></label></li>
+      <li><label><input type="checkbox" id="t-s16-b" data-id="s16-b"><span>I can name the parts of a Karamba model in order</span></label></li>
+      <li><label><input type="checkbox" id="t-s16-c" data-id="s16-c"><span>I can explain why this beam needs six restraints and which six I chose</span></label></li>
+      <li><label><input type="checkbox" id="t-s16-d" data-id="s16-d"><span>My Karamba deflection is within a few percent of the hand value</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="s17">
+    <h3><span class="sn">{{sn}}</span>Analyse the truss</h3>
+    <p class="goal">By the end your truss from Session {{n:s9}} shows tension and compression in colour, and the chord force agrees with M / H.</p>
+
+    <h4>Idea</h4>
+    <p>A truss member carries axial force (軸力) only. In Karamba, <b>Line to Beam</b> has a <b>Bending</b> input. Set it to False and the beams lose their bending stiffness and become truss members.</p>
+    <p>A plane truss in 3D space can also move sideways out of its plane. Nothing pushes it that way, but the manual is clear that what counts is whether a displacement is possible, not whether a force acts. So besides the two bearings, restrain Ty at every node.</p>
+
+    <h4>Example</h4>
+    <ol class="steps">
+      <li>Merge all truss lines into one list and wire them into Line to Beam with Bending = False.</li>
+      <li>Supports: Tx, Ty, Tz at the left bottom node (a pin, ピン支点). Ty and Tz at the right bottom node (a roller, ローラー支点). One more Support fed with all the nodes and only Ty on.</li>
+      <li>Loads: <b>Point-Load</b> at the top nodes. With a line load w, each inner node takes P = w L / n and the two end nodes take half. The force vector is (0, 0, −P).</li>
+      <li>Assemble, Analyze, then <b>Beam Forces</b>. Its N output is the axial force of each member.</li>
+      <li>In BeamView switch on Axial Stress. Karamba draws compression in red and tension in blue, the same colours this page uses.</li>
+    </ol>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s17"></div>
+      <figcaption>Forces in kN, tension positive. Change the truss type in the dark box and watch which members swap between tension and compression. Member labels appear when there is room for them.</figcaption>
+    </figure>
+
+    <details class="qa">
+      <summary>Check yourself: in a Pratt truss under gravity, are the diagonals in tension or compression?</summary>
+      <p>Tension, and the verticals are in compression. A Howe truss is the reverse. Steel trusses are often Pratt for that reason: the long members are in tension, where buckling is not a concern, and the short verticals take the compression.</p>
+    </details>
+
+    <div class="watch">
+      <h4>Watch out: Analyze refuses, or the deflection is enormous</h4>
+      <p>That is a mechanism: some part of the model can move freely. Check the out-of-plane restraints first, then look for nodes that only almost touch by switching on node tags in ModelView. If you cannot find it, set Bending back to True. For a well-triangulated truss the axial forces change very little.</p>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s17-a" data-id="s17-a"><span>I predicted which members are in tension before looking</span></label></li>
+      <li><label><input type="checkbox" id="t-s17-b" data-id="s17-b"><span>I can explain why a plane truss needs out-of-plane restraints</span></label></li>
+      <li><label><input type="checkbox" id="t-s17-c" data-id="s17-c"><span>My truss runs in Karamba and shows red and blue members</span></label></li>
+      <li><label><input type="checkbox" id="t-s17-d" data-id="s17-d"><span>The chord force in Karamba agrees with M / H</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="s18">
+    <h3><span class="sn">{{sn}}</span>Analyse the portal frame</h3>
+    <p class="goal">By the end you can read a bending moment diagram from Karamba and check a laterally loaded frame by hand.</p>
+
+    <h4>Idea</h4>
+    <p>A rigid frame (ラーメン) resists load by bending, so keep Bending on. The results you care about are the bending moment (曲げモーメント), the shear force (せん断力), the axial force, and the sway at beam level, which gives the storey drift angle (層間変形角). In Japan that angle is normally limited to 1/200 in the first-stage seismic check.</p>
+    <p>Load cases keep different actions apart. A point load goes into load case 0 unless you feed a number into its LCase input. A common split is vertical load in case 0 and lateral load in case 1, so you can read the long-term (長期) results alone and then the results with seismic load added (短期).</p>
+
+    <h4>Example</h4>
+    <ol class="steps">
+      <li>Take the three exploded segments from Session {{n:s5}} into Line to Beam.</li>
+      <li>Supports at A and D. Fixed (固定) means all six buttons on. Pinned means Tx, Ty and Tz only.</li>
+      <li>Loads: a Point-Load at B with the vector (P, 0, 0), and a line load on the beam.</li>
+      <li>Assemble, Analyze, then Beam Forces for N, V and M. In BeamView open Section Forces and switch on the bending moment.</li>
+    </ol>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s18"></div>
+      <figcaption>All three members are H-400×200×8×13. Start with the beam load at 0 and compare the pinned and the fixed base: watch the sway and where the moment goes.</figcaption>
+    </figure>
+
+    <div class="watch">
+      <h4>Watch out: two pinned bases in 3D</h4>
+      <p>A frame on two pins can still rotate about the line through its bases, like a door on two hinges. In a 2D hand calculation you never notice. In Karamba it is a mechanism. Add Ty at the two top nodes, or Rx at the bases.</p>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s18-a" data-id="s18-a"><span>I can explain what changes between pinned and fixed bases</span></label></li>
+      <li><label><input type="checkbox" id="t-s18-b" data-id="s18-b"><span>I checked a column-top moment against P·H/2</span></label></li>
+      <li><label><input type="checkbox" id="t-s18-c" data-id="s18-c"><span>My frame runs in Karamba with a bending moment diagram on screen</span></label></li>
+      <li><label><input type="checkbox" id="t-s18-d" data-id="s18-d"><span>I put vertical and lateral load into separate load cases</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="s19">
+    <h3><span class="sn">{{sn}}</span>Sections, utilisation and Japanese practice</h3>
+    <p class="goal">By the end you can give different sections to different member groups, and you know what Karamba's utilisation number does and does not mean in Japan.</p>
+
+    <h4>Idea</h4>
+    <p>Members get a section through their name. Feed a text such as <code>top</code>, <code>bottom</code> or <code>diag</code> into the <b>Id</b> input of Line to Beam. Then wire a cross section into Assemble Model and tell it which Id it belongs to. This is why you kept the member sets in separate groups and trees.</p>
+    <p>Karamba reports <b>utilisation</b>, the ratio of stress to strength. Two things to know before you trust it. BeamView's utilisation uses normal stress only, without shear or buckling. The Utilization of Elements component does consider buckling, but follows Eurocode 3. Neither is the Japanese check.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Item</th><th>Karamba</th><th>Japanese practice</th></tr></thead>
+        <tbody>
+          <tr><td>Steel grade</td><td>Eurocode grades such as S235, yield 235 N/mm²</td><td>SN400 or SS400, F = 235 N/mm²</td></tr>
+          <tr><td>Young's modulus (ヤング係数)</td><td class="n">210,000 N/mm²</td><td class="n">205,000 N/mm²</td></tr>
+          <tr><td>Check</td><td>Utilisation to Eurocode 3</td><td>Allowable stress design (許容応力度設計): 検定比 = σ / f</td></tr>
+          <tr><td>Strength used</td><td>Yield strength</td><td>Long-term f = F / 1.5 = 156 N/mm². Short-term f = F</td></tr>
+          <tr><td>Sections</td><td>Built-in table, organised by country and shape</td><td>JIS H-sections. If a size is missing, define it with I-Profile or read your own table from a file</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>So treat Karamba's utilisation as a quick way to compare options, and compute the 検定比 yourself. It is two components: divide N by the area, or M by the section modulus (断面係数), then divide by f. The allowable stress for compression and for bending is lower than F / 1.5 when buckling governs, and that part stays a hand or office-tool check.</p>
+
+    <h4>Example: JIS H-sections used on this page</h4>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Section</th><th>A, cm²</th><th>Ix, cm⁴</th><th>Zx, cm³</th></tr></thead>
+        <tbody>
+          <tr><td class="n">H-200×100×5.5×8</td><td class="n">26.67</td><td class="n">1,810</td><td class="n">181</td></tr>
+          <tr><td class="n">H-250×125×6×9</td><td class="n">36.97</td><td class="n">3,960</td><td class="n">317</td></tr>
+          <tr><td class="n">H-300×150×6.5×9</td><td class="n">46.78</td><td class="n">7,210</td><td class="n">481</td></tr>
+          <tr><td class="n">H-350×175×7×11</td><td class="n">62.91</td><td class="n">13,500</td><td class="n">771</td></tr>
+          <tr><td class="n">H-400×200×8×13</td><td class="n">83.37</td><td class="n">23,500</td><td class="n">1,170</td></tr>
+          <tr><td class="n">H-500×200×10×16</td><td class="n">112.3</td><td class="n">46,800</td><td class="n">1,870</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <details class="qa">
+      <summary>Check yourself: a bottom chord carries 420 kN of long-term tension. Which is the lightest section in the table that passes?</summary>
+      <p>You need A of at least 420,000 / 156 = 2,692 mm², which is 26.9 cm². H-200×100 has 26.67 cm² and gives 157 N/mm², a 検定比 of 1.01, so it fails by a hair. H-250×125 gives 114 N/mm² and a 検定比 of 0.73. A real check would also deduct bolt holes.</p>
+    </details>
+
+    <h4>Where Grasshopper sits in an office</h4>
+    <p>Grasshopper and Karamba are used most in the early stages: generating geometry for a complex roof, comparing ten structural options in an afternoon, finding where the forces go. The calculation submitted for building confirmation (確認申請) is normally produced in the office's own analysis software. Your definition's job is to get a good scheme to that point quickly, and to hand over clean centre lines.</p>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Give your truss members the Ids <code>top</code>, <code>bottom</code>, <code>vert</code> and <code>diag</code>.</li>
+      <li>Assign a heavier section to the chords than to the web members through Assemble Model.</li>
+      <li>From Beam Forces, compute your own 検定比 for the tension members with Division components and show the largest one in a panel.</li>
+    </ol>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s19-a" data-id="s19-a"><span>I assigned sections to member groups by Id</span></label></li>
+      <li><label><input type="checkbox" id="t-s19-b" data-id="s19-b"><span>I can explain why Karamba's utilisation is not the Japanese 検定比</span></label></li>
+      <li><label><input type="checkbox" id="t-s19-c" data-id="s19-c"><span>I computed a 検定比 for a tension member inside my definition</span></label></li>
+    </ul>
+  </article>
+</section>
+

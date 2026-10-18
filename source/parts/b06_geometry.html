@@ -1,0 +1,132 @@
+<!-- ================= GEOMETRY ================= -->
+<section class="stage" id="geometry" data-stage="geometry">
+  <header>
+    <h2>Geometry for structures</h2>
+    <p>Frames on a grid only need points and lines. Roofs, arches and shells need curves and surfaces. Three sessions give you the geometry a structural engineer is usually asked to generate.</p>
+  </header>
+
+  <article class="session" id="s13">
+    <h3><span class="sn">{{sn}}</span>Curves and how to divide them</h3>
+    <p class="goal">By the end you can place nodes along any curve and you know what "equal division" really means.</p>
+
+    <h4>Idea</h4>
+    <p>Every curve has a <b>parameter</b>, t, that runs from its start to its end, a little like a kilometre post along a road. <b>Evaluate Curve</b> returns the point at a given t. Right-click a curve input and choose <b>Reparameterize</b> to make t run from 0 to 1, so 0.5 is roughly the middle.</p>
+    <p>For structures the workhorse is <b>Divide Curve</b>. It cuts a curve into N pieces of <b>equal length along the curve</b> and returns N + 1 points. On a straight chord that means equal spacing. On an arch it does not: the points are evenly spaced along the arc, so their spacing on plan is uneven.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s13"></div>
+      <figcaption>An arch with hangers down to a deck. Raise the rise and compare the last line of the readout: the hangers near the supports land closer together on the deck.</figcaption>
+    </figure>
+
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Component</th><th>Find it under</th><th>What it gives you</th></tr></thead>
+        <tbody>
+          <tr><td>Arc 3Pt</td><td>Curve, Primitive</td><td>A circular arc through three points</td></tr>
+          <tr><td>Interpolate</td><td>Curve, Spline</td><td>A smooth curve through a list of points</td></tr>
+          <tr><td>Divide Curve</td><td>Curve, Division</td><td>N + 1 points at equal length along the curve</td></tr>
+          <tr><td>Evaluate Curve</td><td>Curve, Analysis</td><td>The point and tangent at parameter t</td></tr>
+          <tr><td>End Points</td><td>Curve, Analysis</td><td>Start and end, for placing supports</td></tr>
+          <tr><td>Expression</td><td>Maths, Script</td><td>A formula you type, applied to every item</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>In Rhino: a parabolic arch</h4>
+    <p>A parabola carries uniform load in pure compression, which is why arch bridges use it. Its shape is z = 4 f x (L − x) / L².</p>
+    <ol class="steps">
+      <li>Make the x values with <b>Range</b>: domain 0 to L, 20 steps.</li>
+      <li>Place <b>Expression</b>. Zoom in on it to add inputs and name them x, L and f. Double-click it and type <code>4*f*x*(L-x)/L^2</code>.</li>
+      <li>Send x and the result into the X and Z of Construct Point, then the points into <b>Interpolate</b>.</li>
+      <li>Divide the arch with Divide Curve. For hangers at equal spacing on the deck instead, divide the deck line and send those x values through the same Expression.</li>
+    </ol>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s13-a" data-id="s13-a"><span>I can explain what the parameter t of a curve is</span></label></li>
+      <li><label><input type="checkbox" id="t-s13-b" data-id="s13-b"><span>I know Divide Curve gives equal lengths along the curve, not equal spacing on plan</span></label></li>
+      <li><label><input type="checkbox" id="t-s13-c" data-id="s13-c"><span>I built a parabolic arch from an Expression</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="s14">
+    <h3><span class="sn">{{sn}}</span>Vectors and moving things</h3>
+    <p class="goal">By the end you can copy a truss along a building to make a roof, with every truss kept in its own branch.</p>
+
+    <h4>Idea</h4>
+    <p>A <b>vector</b> is a direction with a length. <b>Unit X</b>, <b>Unit Y</b> and <b>Unit Z</b> make a vector along an axis, and their input F sets its length. <b>Move</b> shifts geometry by a vector. Loads are vectors too: a 10 kN load downwards is the vector (0, 0, −10).</p>
+    <p>Move with one truss and a list of vectors is where lists and trees meet. The truss is a list of lines. The vectors are a list as well. Wire them in plainly and Longest List pairs line 0 with vector 0, line 1 with vector 1, and tears the truss apart. <b>Graft the vectors</b> and each one runs separately against the whole truss.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s14"></div>
+      <figcaption>Graft is a right-click option on the T input of Move. It is shown here as a toggle so you can switch it. Turn it off once to see the mistake.</figcaption>
+    </figure>
+
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Component</th><th>Find it under</th><th>Ports</th></tr></thead>
+        <tbody>
+          <tr><td>Unit X, Unit Y, Unit Z</td><td>Vector, Vector</td><td>F in; V out</td></tr>
+          <tr><td>Vector 2Pt</td><td>Vector, Vector</td><td>A, B in; V and length out</td></tr>
+          <tr><td>Amplitude</td><td>Vector, Vector</td><td>Sets the length of a vector</td></tr>
+          <tr><td>Move</td><td>Transform, Euclidean</td><td>G, T in; G out</td></tr>
+          <tr><td>Mirror, Rotate</td><td>Transform, Euclidean</td><td>Geometry and a plane or angle</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Take your truss from Session {{n:s9}} and merge its four member sets into one list with <b>Merge</b>.</li>
+      <li>Build Series into Unit Y into the T input of Move, as in the figure. Right-click T and choose Graft.</li>
+      <li>Check with a Param Viewer: one branch per truss.</li>
+      <li>Add purlins (母屋). Move the top chord nodes the same way, then use Flip Matrix so each branch holds the same node on every truss, and run Polyline.</li>
+    </ol>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s14-a" data-id="s14-a"><span>I can make a vector of a given length along an axis</span></label></li>
+      <li><label><input type="checkbox" id="t-s14-b" data-id="s14-b"><span>I can explain why the vectors must be grafted before Move</span></label></li>
+      <li><label><input type="checkbox" id="t-s14-c" data-id="s14-c"><span>I copied my truss into a row with one branch per truss</span></label></li>
+      <li><label><input type="checkbox" id="t-s14-d" data-id="s14-d"><span>I added purlins with Flip Matrix</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="s15">
+    <h3><span class="sn">{{sn}}</span>Surfaces and grids on them</h3>
+    <p class="goal">By the end you can turn a roof surface into a grid of members, including a diagrid.</p>
+
+    <h4>Idea</h4>
+    <p>A surface has two directions, called <b>U</b> and <b>V</b>, the way a curve has one parameter t. <b>Divide Surface</b> returns a grid of points on it as a tree: one branch per U position, each holding the points along V. From there it is the list work you already know.</p>
+    <ul>
+      <li>Lines along V: within each branch, node j to node j + 1.</li>
+      <li>Lines along U: Flip Matrix first, then the same.</li>
+      <li>Diagrid: connect node (i, j) to node (i + 1, j + 1), and node (i + 1, j) to node (i, j + 1). That is one branch shifted against the next.</li>
+    </ul>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s15"></div>
+      <figcaption>A barrel roof: an arc extruded along Y, then divided. Switch the member pattern and watch the member count.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Build the arc from Session {{n:s13}} and extrude it with <b>Extrude</b> (Surface, Freeform) along a Unit Y vector.</li>
+      <li>Add <b>Divide Surface</b> (Surface, Util) with sliders on U and V. Put a Param Viewer on P.</li>
+      <li>Draw the V lines and the U lines as two separate groups.</li>
+      <li>For the diagrid, pair each branch with the next one. <b>Shift Paths</b> or <b>Relative Item</b> (both under Sets, Tree) can do it. The simpler route to start with is Flip Matrix, then Shift List inside each branch.</li>
+    </ol>
+    <p>When the surface comes from an architect it will not be a neat extrusion. Reference it from Rhino as in Session {{n:s6}} and the rest of the definition stays the same.</p>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s15-a" data-id="s15-a"><span>I can explain what U and V are on a surface</span></label></li>
+      <li><label><input type="checkbox" id="t-s15-b" data-id="s15-b"><span>I can read the tree that Divide Surface returns</span></label></li>
+      <li><label><input type="checkbox" id="t-s15-c" data-id="s15-c"><span>I drew grid members in both directions on a barrel roof</span></label></li>
+    </ul>
+  </article>
+</section>
+

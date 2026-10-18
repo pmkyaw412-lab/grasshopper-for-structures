@@ -1,0 +1,117 @@
+<!-- ================= FORM-FINDING ================= -->
+<section class="stage" id="formfinding" data-stage="formfinding">
+  <header>
+    <h2>Form-finding</h2>
+    <p>Some shapes are not designed so much as found. A hanging chain takes the shape that carries its load in pure tension; turned upside down, that shape carries the same load in pure compression. These two sessions use Kangaroo, the physics solver that comes with Grasshopper in Rhino 8, to find such shapes and then check them as structures.</p>
+  </header>
+
+  <article class="session" id="k1">
+    <h3><span class="sn">{{sn}}</span>From a hanging chain to an arch</h3>
+    <p class="goal">By the end you can form-find an arch with Kangaroo and show, with Karamba, why it carries its load almost without bending.</p>
+
+    <h4>Idea</h4>
+    <p>Robert Hooke published the idea as a Latin anagram in 1676: as hangs the flexible line, so but inverted will stand the rigid arch. A chain can only pull, so the shape it hangs in is the line of its forces. Flip it, and every link pushes instead of pulls, still along the line. Gaudí designed the church at Colònia Güell this way, with weighted strings.</p>
+    <ul>
+      <li>Under its own weight, spread evenly along its length, a chain hangs as a <b>catenary</b>.</li>
+      <li>Under a load spread evenly along the horizontal, like a deck hung from it, it hangs as a <b>parabola</b>. That is why the parabolic arch in Session {{n:s13}} suits a bridge.</li>
+    </ul>
+    <p><b>Kangaroo</b> works with <b>goals</b>. Length (Line) holds a link at a length, Anchor holds a point still, Load pushes a point. The <b>Solver</b> moves all the points until every goal is balanced as well as it can be.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="k1"></div>
+      <figcaption>Run the solver, then flip to the arch. The blue area is the bending moment in a circular arch of the same rise under the same loads. The found shape's moment is almost zero; compare the last two readouts.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>A 20 m line, divided into links: Divide Curve, then Polyline and Explode, gives the link lines.</li>
+      <li>On the Kangaroo2 tab, <b>Length (Line)</b> with the links and a length of 1.12 × the link length, so the chain is 12% longer than the span.</li>
+      <li><b>End Points</b> of the original line into two <b>Anchor</b> goals.</li>
+      <li><b>Load</b> on every point with the vector (0, 0, −1).</li>
+      <li><b>Entwine</b> or Merge all the goals into the <b>Solver</b>'s GoalObjects input. Its output points form the hanging chain.</li>
+      <li>Flip: <b>Scale NU</b> (Transform, Affine) with a Z factor of −1. Then Line to Beam in Karamba, pinned supports at both ends, and the same loads pointing down.</li>
+    </ol>
+
+    <div class="watch">
+      <h4>Watch out: one load case only</h4>
+      <p>The found shape is free of bending only for the load that found it. A live load on half the span, or wind, bends it. A real arch still needs bending stiffness; form-finding gives you the best starting shape, not a finished design.</p>
+    </div>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="k1-1"><q>A chain carries a deck load spread evenly along the horizontal. What shape does it hang in?</q>
+    <o>A catenary</o><o correct>A parabola</o><o>A circular arc</o>
+    <why>Load per horizontal metre gives a parabola. Load per metre along the chain, its own weight, gives a catenary. For shallow chains the two are very close.</why></drill>
+    <drill id="k1-2"><q>You make the chain longer, so it sags more. What happens to the horizontal force H at the supports?</q>
+    <o correct>It gets smaller</o><o>It gets larger</o><o>It does not change</o>
+    <why>For a parabola H = wL² / 8f. A larger sag f means a smaller H, and the same holds for the arch's thrust when it is flipped.</why></drill>
+    <drill id="k1-3"><q>The found arch carries a live load on the left half only. What happens?</q>
+    <o>Nothing; it is still in pure compression</o><o correct>Bending moments appear, because the load no longer matches the shape</o><o>The arch turns into a chain</o>
+    <why>The shape matches one load case. Any other load needs bending to be carried, which is why arches still have bending stiffness.</why></drill>
+    <bug id="k1-b" def="bug_k1" answer="an"><q>The chain swings away to one side and never settles. Click the component that needs another input.</q>
+    <hint>How many points are held still?</hint>
+    <why>Only the start point reaches Anchor, so the chain hangs from one end. Wire both S and E of End Points into Anchor.</why></bug>
+    <challenge id="k1-c" title="An unevenly loaded arch">
+    <task><p>Put twice the load on the left half of the chain and form-find again. Flip it, then analyse the symmetric arch from the session under this uneven load and compare the largest moments.</p></task>
+    <done><li>The new shape is lopsided, with its lowest point shifted to the left.</li><li>You can state the largest moment in the symmetric arch under the uneven load.</li></done>
+    <hint>Dispatch the points by x below 10 m and give the two Load goals different strengths.</hint>
+    <solution><ol><li>Deconstruct Point, Smaller Than 10 on x, Dispatch the points.</li><li>Two Load goals: (0, 0, −2) on the left set and (0, 0, −1) on the right.</li><li>Analyse both arches in Karamba with the uneven loads. The symmetric arch now bends; the arch found for this load does not.</li></ol></solution>
+    </challenge>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-k1-a" data-id="k1-a"><span>I form-found a hanging chain with Length, Anchor and Load goals</span></label></li>
+      <li><label><input type="checkbox" id="t-k1-b" data-id="k1-b"><span>I flipped it and showed in Karamba that its bending is close to zero</span></label></li>
+      <li><label><input type="checkbox" id="t-k1-c" data-id="k1-c"><span>I can explain the difference between a catenary and a parabola</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="k2">
+    <h3><span class="sn">{{sn}}</span>From a hanging net to a gridshell</h3>
+    <p class="goal">By the end you can form-find a gridshell roof, check it in Karamba, and say how its supports change its shape.</p>
+
+    <h4>Idea</h4>
+    <p>The same idea works in 3D. Hang a net from its corners or edges and it takes a shape in pure tension; flip it and you have a <b>gridshell</b> (グリッドシェル) in compression. The Mannheim Multihalle, a timber gridshell by Carlfried Mutschler and Frei Otto with Ove Arup &amp; Partners as engineers, completed in 1975, took its form from a hanging model.</p>
+    <p>Which points you anchor changes everything. A net held at its corners sags along its free edges; held on all four edges it forms a dome. Link lengths matter too: equal-length laths are easy to build, so a good gridshell keeps its member lengths close to each other.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="k2"></div>
+      <figcaption>Run the solver with each anchor setting. Thicker links carry more force. Read the last readout: how much do the link lengths spread after solving?</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>A flat grid: <b>Mesh Plane</b> (Mesh, Primitive), 20 by 20 m with 10 by 10 faces.</li>
+      <li><b>Mesh Edges</b> (Mesh, Analysis) gives the links. Length (Line) with 1.1 × their length.</li>
+      <li>Anchors: the end points of the boundary edges, which Mesh Edges returns from its first output, or the four corner vertices only.</li>
+      <li>Load on every vertex with (0, 0, −1). Solver, then Scale NU with Z = −1 to flip.</li>
+      <li>In Karamba: Line to Beam on the flipped edges, pinned supports at the anchored points, and the same loads pointing down. Check that the members are in compression.</li>
+    </ol>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="k2-1"><q>Same net and length factor. Which anchor setting gives the deeper sag at the centre?</q>
+    <o correct>Corners only</o><o>Four edges</o><o>They are the same</o>
+    <why>With only the corners held, the edges sag too, and the middle hangs from sagging edges. Try both in the live example.</why></drill>
+    <drill id="k2-2"><q>After flipping, what kind of force do the links carry under the form-finding load?</q>
+    <o>Tension</o><o correct>Compression</o><o>Bending only</o>
+    <why>Every link that pulled in the hanging net pushes in the flipped shell.</why></drill>
+    <challenge id="k2-c" title="A gridshell that rises exactly 4 m">
+    <task><p>Use Galapagos to find the length factor that gives a gridshell rise of exactly 4.00 m, held on all four edges.</p></task>
+    <done><li>The rise is within 10 mm of 4.00 m.</li><li>Galapagos has the length factor as its only gene.</li></done>
+    <hint>Fitness: the absolute difference between the rise and 4, minimised. Absolute (Maths, Operators) gives it.</hint>
+    <hint>Kangaroo must finish solving before Galapagos reads the fitness. Turn the solver's reset on for every new slider value, or use the BouncySolver, which solves in one go.</hint>
+    <solution><ol><li>Rise: Deconstruct Point on the solved points, Bounds on z, the larger end.</li><li>Fitness = Absolute(rise − 4); Galapagos Minimize; genome = the length factor slider.</li><li>Make sure each Galapagos step gets a fully solved shape before it is measured.</li></ol></solution>
+    </challenge>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-k2-a" data-id="k2-a"><span>I form-found a gridshell from a flat mesh</span></label></li>
+      <li><label><input type="checkbox" id="t-k2-b" data-id="k2-b"><span>I checked in Karamba that its members are in compression</span></label></li>
+      <li><label><input type="checkbox" id="t-k2-c" data-id="k2-c"><span>I can explain how the anchors change the shape</span></label></li>
+    </ul>
+  </article>
+</section>
+

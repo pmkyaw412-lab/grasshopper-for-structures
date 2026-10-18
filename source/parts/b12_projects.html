@@ -1,0 +1,347 @@
+<!-- ================= PROJECTS ================= -->
+<section class="stage" id="capstone" data-stage="capstone">
+  <header>
+    <h2>Projects</h2>
+    <p>Four projects that work like small office jobs, each with a brief, things to hand in, and a comparison table (比較検討表) that ranks your options. The briefs are exercises: their loads and limits are set for practice, not taken from a real design. Keep every definition; together they are your portfolio.</p>
+  </header>
+
+  <article class="session" id="s20">
+    <h3><span class="sn">{{sn}}</span>Truss roof: the geometry</h3>
+    <p class="goal">By the end you have a truss roof over a hall, controlled by five sliders and organised so that someone else can read it.</p>
+
+    <h4>The brief</h4>
+    <p>A hall 24 m wide and 36 m long, the size of a school gymnasium (体育館). Steel trusses span the 24 m and stand 6 m apart. Start with a depth of span / 10 and 6 panels.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Slider</th><th>Start value</th><th>Drives</th></tr></thead>
+        <tbody>
+          <tr><td>Span L</td><td class="n">24 m</td><td>Node spacing along X</td></tr>
+          <tr><td>Depth H</td><td class="n">2.4 m</td><td>Top chord height</td></tr>
+          <tr><td>Panels n</td><td class="n">6</td><td>Series step and count</td></tr>
+          <tr><td>Spacing s</td><td class="n">6 m</td><td>Copy distance along Y</td></tr>
+          <tr><td>Trusses</td><td class="n">7</td><td>Number of copies</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>One truss: reuse Session {{n:s9}}. Keep top chord, bottom chord, verticals and diagonals as four separate outputs.</li>
+      <li>Make it a Pratt truss, with the diagonals running down towards midspan in both halves.</li>
+      <li>The row: reuse Session {{n:s14}}. Graft the vectors, one branch per truss.</li>
+      <li>Purlins and a bottom chord tie between trusses: Flip Matrix, as in Session {{n:s14}}.</li>
+      <li>Lay the canvas out in named groups from left to right: Inputs, One truss, Roof, Analysis, Results.</li>
+      <li>Bake one version to layers named by member type.</li>
+    </ol>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s20-a" data-id="s20-a"><span>My roof follows all five sliders without breaking</span></label></li>
+      <li><label><input type="checkbox" id="t-s20-b" data-id="s20-b"><span>Each member type is a separate output, and each truss its own branch</span></label></li>
+      <li><label><input type="checkbox" id="t-s20-c" data-id="s20-c"><span>Every group on my canvas has a name</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="s21">
+    <h3><span class="sn">{{sn}}</span>Truss roof: analyse, check and present</h3>
+    <p class="goal">By the end you have analysed one roof truss, checked it three ways, and written down what you found.</p>
+
+    <h4>Idea</h4>
+    <p>A roof load is an area load q in kN/m². One inner truss collects a strip as wide as the truss spacing, so its line load is w = q × s, and each top node takes P = w L / n. Analyse one truss in its plane before you try the whole roof. It is quicker to check and tells you nearly everything.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s21"></div>
+      <figcaption>Predict first, then build. The roof load slider starts at 1.5 kN/m² as a placeholder: use the dead and live loads from your own project.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Add Karamba to the truss as in Session {{n:s17}}. Compute P from q, s, L and n with Multiplication and Division, so the load follows the sliders.</li>
+      <li>Check 1, statics: the chord force against M / H.</li>
+      <li>Check 2, stress: your own 検定比 for the most loaded tension member.</li>
+      <li>Check 3, stiffness: midspan deflection against your limit. A common office target for steel roof members is span / 300. Confirm the one your project uses.</li>
+      <li>Move the depth slider from 1.6 m to 3.2 m in steps and note the chord force and deflection each time. Which depth would you propose, and why?</li>
+      <li>Write half a page: the brief, a screenshot of the definition, a screenshot of the result, the three checks, your proposed depth.</li>
+    </ol>
+
+    <div class="watch">
+      <h4>Watch out: the 20-beam limit</h4>
+      <p>A truss with 6 panels has 25 members, which is over the limit of the full-feature trial. Either drop to 4 panels (17 members), run in free mode and do the stress check by hand, or buy the student licence.</p>
+    </div>
+
+    <h4>Take it further</h4>
+    <ul>
+      <li>Add the buckling check from Session {{n:m1}} to the compression members, and let Galapagos from Session {{n:o1}} choose the depth.</li>
+      <li>Fill the comparison table below with three depths you tried, to practise for the projects that follow.</li>
+    </ul>
+    <matrix id="s21" options="Depth A|Depth B|Depth C"><c name="Depth" unit="m" better="low" w="2"/><c name="Steel in one truss" unit="kg" better="low" w="4"/><c name="Midspan deflection" unit="mm" better="low" w="3"/><c name="Largest 検定比" better="low" w="3"/></matrix>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s21-a" data-id="s21-a"><span>I can turn an area load into node loads on a truss</span></label></li>
+      <li><label><input type="checkbox" id="t-s21-b" data-id="s21-b"><span>My roof truss passes the statics, stress and stiffness checks, or I know why not</span></label></li>
+      <li><label><input type="checkbox" id="t-s21-c" data-id="s21-c"><span>I compared at least four truss depths and chose one</span></label></li>
+      <li><label><input type="checkbox" id="t-s21-d" data-id="s21-d"><span>I wrote the half-page summary</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="p1">
+    <h3><span class="sn">{{sn}}</span>Footbridge: three options</h3>
+    <p class="goal">By the end you have one definition that draws three structural options for a park footbridge, switchable with one value list.</p>
+
+    <div class="brief">
+      <div class="tb">
+        <div><span>Project</span><b>Park footbridge (歩道橋)</b></div>
+        <div><span>Span</span><b>30 m, simply supported</b></div>
+        <div><span>Clear width</span><b>3 m</b></div>
+        <div><span>Your role</span><b>Option study</b></div>
+        <div><span>Hand in</span><b>End of session {{n:p1b}}</b></div>
+      </div>
+      <div class="bb">
+        <p>A city park needs a footbridge across a river, 30 m between abutments. The landscape architect asks which steel structure suits it best and wants three options compared on one page.</p>
+        <h5>Requirements for this exercise</h5>
+        <ul>
+          <li>Pedestrian load 5 kN/m² on the deck, carried by two main trusses or arches, one on each side.</li>
+          <li>Deflection under that load no more than span / 500.</li>
+          <li>Nothing may stand more than 2.5 m above the deck, so the view is kept.</li>
+        </ul>
+        <h5>Options</h5>
+        <ul><li>A. Pratt truss</li><li>B. Warren truss</li><li>C. Tied arch with vertical hangers, as in the Session {{n:s13}} challenge, with its rise kept under 2.5 m</li></ul>
+      </div>
+    </div>
+
+    <h4>Steps</h4>
+    <ol class="steps">
+      <li>Start from your truss definition (Session {{n:s9}}) and your tied arch (Session {{n:s13}} challenge). Put each in a named group.</li>
+      <li>One <b>Value List</b> (Params, Input) with Pratt, Warren and Tied arch. <b>Stream Filter</b> picks which option's lines go on to the analysis.</li>
+      <li>Deck: the bottom chord or tie carries cross beams every panel; the load on one main structure is 5 × 3 / 2 = 7.5 kN/m.</li>
+      <li>Give every option the same inputs: span, depth or rise, and number of panels or hangers.</li>
+    </ol>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="p1"></div>
+      <figcaption>A quick hand check for the two truss options, sized with pipes as in Session {{n:o1}}. Use it to choose sensible depths before you model, then confirm the numbers in Karamba.</figcaption>
+    </figure>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="p1-1"><q>What line load does one main truss carry?</q>
+    <o>15 kN/m</o><o correct>7.5 kN/m</o><o>5 kN/m</o>
+    <why>5 kN/m² over a 3 m deck is 15 kN/m, shared by two trusses: 7.5 kN/m each.</why></drill>
+    <drill id="p1-2"><q>The brief limits deflection to span / 500. What is that for this bridge?</q>
+    <o correct>60 mm</o><o>100 mm</o><o>15 mm</o>
+    <why>30,000 / 500 = 60 mm.</why></drill>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-p1-a" data-id="p1-a"><span>One value list switches between the three options</span></label></li>
+      <li><label><input type="checkbox" id="t-p1-b" data-id="p1-b"><span>Every option shares the same span and load inputs</span></label></li>
+      <li><label><input type="checkbox" id="t-p1-c" data-id="p1-c"><span>No part stands more than 2.5 m above the deck</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="p1b">
+    <h3><span class="sn">{{sn}}</span>Footbridge: analyse and compare</h3>
+    <p class="goal">By the end you have analysed all three options and written a one-page recommendation backed by numbers.</p>
+
+    <h4>Steps</h4>
+    <ol class="steps">
+      <li>Karamba for each option: pinned at one end, roller at the other, out-of-plane restraints as in Session {{n:s17}}, the 7.5 kN/m load at the nodes.</li>
+      <li>Check members with your report from Session {{n:m3}}: tension, buckling for compression, and the deflection limit.</li>
+      <li>Record steel weight, deflection, the largest 検定比, depth or rise, and the number of different member sizes for each option.</li>
+      <li>Fill in the comparison table. Set the weights to what this client cares about, and be ready to defend them.</li>
+      <li>Write half a page: the brief in one line, a picture of each option, the table, your recommendation, and one risk to check next.</li>
+    </ol>
+
+    <h4>Comparison table</h4>
+    <matrix id="p1" options="A. Pratt|B. Warren|C. Tied arch"><c name="Steel in one main structure" unit="kg" better="low" w="4"/><c name="Midspan deflection" unit="mm" better="low" w="3"/><c name="Largest 検定比" better="low" w="3"/><c name="Height above deck" unit="m" better="low" w="2"/><c name="Different member sizes" better="low" w="2"/><c name="Openness of the view, 1 to 5" better="high" w="3"/></matrix>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="p1b-1"><q>The table ranks option B first, but its score is only 2 points above A. What should your report say?</q>
+    <o>B is the answer</o><o correct>A and B are close; say what would decide between them</o><o>Change the weights until A wins</o>
+    <why>A small gap means the ranking depends on the weights. Say which criterion would decide it and what you would check next.</why></drill>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-p1b-a" data-id="p1b-a"><span>All three options run in Karamba and pass, or I know why one cannot</span></label></li>
+      <li><label><input type="checkbox" id="t-p1b-b" data-id="p1b-b"><span>The comparison table is filled in from my own results</span></label></li>
+      <li><label><input type="checkbox" id="t-p1b-c" data-id="p1b-c"><span>I wrote the half-page recommendation</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="p2">
+    <h3><span class="sn">{{sn}}</span>Atrium gridshell: form and panels</h3>
+    <p class="goal">By the end you have three roof forms for a glazed courtyard, each with its panel flatness measured.</p>
+
+    <div class="brief">
+      <div class="tb">
+        <div><span>Project</span><b>School courtyard roof (中庭)</b></div>
+        <div><span>Plan</span><b>20 m × 20 m</b></div>
+        <div><span>Supports</span><b>All four edges</b></div>
+        <div><span>Your role</span><b>Form and structure study</b></div>
+        <div><span>Hand in</span><b>End of session {{n:p2b}}</b></div>
+      </div>
+      <div class="bb">
+        <p>A school wants to roof its courtyard with glass. The building around it can support the roof on all four edges. The architect wants a light steel grid, about 2 m by 2 m, and asks which form to take forward.</p>
+        <h5>Requirements for this exercise</h5>
+        <ul>
+          <li>Rise between 2.5 m and 4 m.</li>
+          <li>Glass panels should be flat; the glass supplier accepts up to 5 mm of warp per panel, a figure set for this exercise.</li>
+          <li>Load for checking: 1.5 kN/m² over the plan, all members in compression under it if possible.</li>
+        </ul>
+        <h5>Options</h5>
+        <ul><li>A. Form-found net, flipped (Session {{n:k2}})</li><li>B. Spherical dome (Session {{n:f4}})</li><li>C. Translation dome (Session {{n:f4}} challenge)</li></ul>
+      </div>
+    </div>
+
+    <h4>Steps</h4>
+    <ol class="steps">
+      <li>Build all three forms over the same 20 m square with the same 10 by 10 grid and the same rise.</li>
+      <li>Measure every panel's warp with Plane Fit, and count the panels over 5 mm.</li>
+      <li>For option A, use Galapagos from the Session {{n:k2}} challenge to hit the rise exactly.</li>
+    </ol>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="p2-1"><q>Which option should give flat quad panels without any extra work?</q>
+    <o>A. Form-found net</o><o>B. Spherical dome</o><o correct>C. Translation dome</o>
+    <why>A translation surface has flat quads by construction. A form-found net generally does not, and a sphere's quads warp more towards its edges.</why></drill>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-p2-a" data-id="p2-a"><span>Three forms over the same plan, grid and rise</span></label></li>
+      <li><label><input type="checkbox" id="t-p2-b" data-id="p2-b"><span>Panel warp measured and counted for each</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="p2b">
+    <h3><span class="sn">{{sn}}</span>Atrium gridshell: analyse and compare</h3>
+    <p class="goal">By the end you have analysed the three forms and can explain why the form-found one works hardest for its weight.</p>
+
+    <h4>Steps</h4>
+    <ol class="steps">
+      <li>Karamba for each form: the grid as beams with one pipe size, pinned along all four edges, 1.5 kN/m² turned into node loads (load × the plan area around each node).</li>
+      <li>Read the largest deflection, the largest 検定比 and how many members go into tension.</li>
+      <li>Size the pipe so the worst member passes, and record the steel weight.</li>
+      <li>Fill in the table and write your recommendation, including what the glass supplier needs to hear.</li>
+    </ol>
+
+    <h4>Comparison table</h4>
+    <matrix id="p2" options="A. Form-found|B. Sphere|C. Translation"><c name="Steel weight" unit="t" better="low" w="4"/><c name="Largest deflection" unit="mm" better="low" w="3"/><c name="Largest 検定比" better="low" w="3"/><c name="Panels warped over 5 mm" better="low" w="3"/><c name="Members in tension" better="low" w="2"/></matrix>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-p2b-a" data-id="p2b-a"><span>All three forms analysed with the same section and load</span></label></li>
+      <li><label><input type="checkbox" id="t-p2b-b" data-id="p2b-b"><span>The table is filled in and I wrote the recommendation</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="p3">
+    <h3><span class="sn">{{sn}}</span>Diagrid tower: form and facade</h3>
+    <p class="goal">By the end you have a parametric tower with three twist options, a diagrid and an attractor facade on one side.</p>
+
+    <div class="brief">
+      <div class="tb">
+        <div><span>Project</span><b>Office tower, concept stage</b></div>
+        <div><span>Height</span><b>30 storeys × 4 m</b></div>
+        <div><span>Plate</span><b>30 m square</b></div>
+        <div><span>Your role</span><b>Structure and facade study</b></div>
+        <div><span>Hand in</span><b>End of session {{n:p3b}}</b></div>
+      </div>
+      <div class="bb">
+        <p>The architect is choosing between a straight tower and two twisting ones, and wants the facade to open towards the park on the south side. You are asked what the twist does to the structure and to the facade.</p>
+        <h5>Options</h5>
+        <ul><li>A. No twist</li><li>B. 45° twist</li><li>C. 90° twist</li></ul>
+        <h5>Requirements for this exercise</h5>
+        <ul>
+          <li>A diagrid on the perimeter, nodes every two floors.</li>
+          <li>Openings larger towards a park point on the south side, rationalised into at most 6 panel types.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h4>Steps</h4>
+    <ol class="steps">
+      <li>Tower and diagrid from Session {{n:f3}}, with the twist on a Value List of 0, 45 and 90.</li>
+      <li>Facade panels between the diagrid nodes on the south face, openings from the attractor in Session {{n:f2}}, rationalised to 6 types.</li>
+      <li>Count the different diagrid member lengths for each option, rounded to 10 mm. Fewer lengths mean simpler fabrication.</li>
+    </ol>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="p3-1"><q>Which option should have the fewest different diagrid member lengths?</q>
+    <o correct>A. No twist</o><o>B. 45° twist</o><o>C. 90° twist</o>
+    <why>Without twist or taper, every bay of the diagrid repeats. Twisting changes the geometry from floor to floor.</why></drill>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-p3-a" data-id="p3-a"><span>One value list switches the three twist options</span></label></li>
+      <li><label><input type="checkbox" id="t-p3-b" data-id="p3-b"><span>The south facade follows the attractor with at most 6 panel types</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="p3b">
+    <h3><span class="sn">{{sn}}</span>Diagrid tower: analyse and compare</h3>
+    <p class="goal">By the end you know how the twist changes the tower's lateral stiffness and its steel, with numbers for each option.</p>
+
+    <h4>Steps</h4>
+    <ol class="steps">
+      <li>Karamba: the diagrid members as beams with one pipe size, fixed at the base, floor plates as rigid rings (stiff beams around each node level).</li>
+      <li>Lateral load: a horizontal point load at every node level. Use 100 kN per level as a placeholder for this exercise.</li>
+      <li>Read the top sway and the storey drift angles; compare with 1/200.</li>
+      <li>Record steel weight, top sway, member lengths and facade panel types for each option, then fill in the table.</li>
+    </ol>
+
+    <h4>Comparison table</h4>
+    <matrix id="p3" options="A. 0°|B. 45°|C. 90°"><c name="Top sway" unit="mm" better="low" w="4"/><c name="Diagrid steel" unit="t" better="low" w="3"/><c name="Different member lengths" better="low" w="2"/><c name="Facade panel types" better="low" w="2"/><c name="Architectural intent, 1 to 5" better="high" w="3"/></matrix>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-p3b-a" data-id="p3b-a"><span>All three options analysed under the same lateral load</span></label></li>
+      <li><label><input type="checkbox" id="t-p3b-b" data-id="p3b-b"><span>The table is filled in and I can explain the effect of the twist</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="p4">
+    <h3><span class="sn">{{sn}}</span>A one-page portfolio sheet</h3>
+    <p class="goal">By the end you have one A3 sheet that shows how you think, ready for an Arup or KKE application or interview.</p>
+
+    <h4>Idea</h4>
+    <p>An interviewer looks at a portfolio page for less than a minute. The page should show a question, a method, options, a comparison and a decision, in that order. Pick your strongest project, usually the footbridge or the gridshell.</p>
+    <figure class="def">
+      <div class="sheet" role="img" aria-label="Layout of an A3 portfolio sheet: a title and question across the top; method and options in the middle; comparison table and decision at the bottom.">
+        <div class="sh-a"><b>Title and question</b><span>One line each: what was asked</span></div>
+        <div class="sh-b"><b>Method</b><span>The definition, grouped and named, as one clean screenshot</span></div>
+        <div class="sh-c"><b>Options</b><span>Three views at the same scale and angle, with force colours</span></div>
+        <div class="sh-d"><b>Comparison</b><span>Your 比較検討表 with the weights shown</span></div>
+        <div class="sh-e"><b>Decision</b><span>The recommendation, one risk, and what you learned</span></div>
+      </div>
+      <figcaption>Layout for an A3 landscape sheet. Read from top left to bottom right, as a reviewer would.</figcaption>
+    </figure>
+
+    <h4>Steps</h4>
+    <ol class="steps">
+      <li>Clean the definition: inputs on the left, results on the right, every group named, no loose wires. Add a short <b>Scribble</b> (Params, Util) title to each group.</li>
+      <li>Capture the canvas with File, Export Quick Image, and the Rhino views with <code>ViewCaptureToFile</code>, all at the same size.</li>
+      <li>Lay out the sheet in the order above. Keep text short: a reviewer reads the headings and the numbers.</li>
+      <li>Practise saying the page out loud in two minutes, in English and in Japanese.</li>
+    </ol>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="p4-1"><q>What should a reviewer understand first from the sheet?</q>
+    <o>Which plug-ins you used</o><o correct>The question you were answering</o><o>How many components the definition has</o>
+    <why>The question frames everything else. Tools are a means; put them in the method box.</why></drill>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-p4-a" data-id="p4-a"><span>My definition is clean enough to screenshot</span></label></li>
+      <li><label><input type="checkbox" id="t-p4-b" data-id="p4-b"><span>The A3 sheet follows the five-part layout</span></label></li>
+      <li><label><input type="checkbox" id="t-p4-c" data-id="p4-c"><span>I can present it in two minutes in English and in Japanese</span></label></li>
+    </ul>
+  </article>
+</section>
+

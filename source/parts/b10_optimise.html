@@ -1,0 +1,122 @@
+<!-- ================= OPTIMISATION ================= -->
+<section class="stage" id="optimise" data-stage="optimise">
+  <header>
+    <h2>Optimisation</h2>
+    <p>Once a definition can size and check its own members, Grasshopper can search through hundreds of designs for you. These two sessions use Galapagos, which comes with Grasshopper, and then look at what to do when there is more than one goal.</p>
+  </header>
+
+  <article class="session" id="o1">
+    <h3><span class="sn">{{sn}}</span>Galapagos: the lightest roof truss</h3>
+    <p class="goal">By the end you can set up Galapagos with a genome, a fitness and a penalty, and judge whether its answer is any good.</p>
+
+    <h4>Idea</h4>
+    <p><b>Galapagos</b> (Params, Util) is an evolutionary solver. You give it two things:</p>
+    <ul>
+      <li>A <b>genome</b>: the sliders it is allowed to move. Here they are the depth, the number of panels, and a 0, 1, 2 slider for the truss type.</li>
+      <li>A <b>fitness</b>: one number to make as small or as large as possible. Here it is the steel weight of one truss, in kilograms.</li>
+    </ul>
+    <p>It tries a population of random designs, keeps the fittest, breeds new designs by mixing and mutating their sliders, and repeats for many generations. It cannot read your checks, so you build them into the fitness: if a design breaks the deflection limit, add a large <b>penalty</b> to its weight so it can never win.</p>
+    <p>Galapagos does not promise the best possible answer. When the search space is small, as here with 435 combinations, you can check its answer by trying them all (brute force).</p>
+
+    <h4>Example</h4>
+    <ol class="steps">
+      <li>The truss from Session {{n:s9}} with sliders for depth H (1.2 to 4.0 m), panels n (4 to 12, step 2) and type (0 to 2).</li>
+      <li>Sizing: for each member group, the lightest steel pipe (鋼管, STK400) from a list that passes its check. Tension: σ ≤ 156 N/mm². Compression: σ ≤ fc from Session {{n:m1}}, with the member length as buckling length. Every member: λ ≤ 250.</li>
+      <li>Fitness: total weight, plus 10 × weight × the amount by which the deflection exceeds span / 300.</li>
+    </ol>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="o1"></div>
+      <figcaption>Start the solver and watch the population close in. The dashed line is the lightest possible weight at each depth, found by trying all 435 designs. Run it again with a new seed: the answer may change, but it lands near the bottom of the dashed curve.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Place <b>Galapagos</b>. Drag from its Genome input to each slider you want it to move. Galapagos only accepts sliders and gene pools as genes.</li>
+      <li>Wire one number into Fitness: your weight plus penalty.</li>
+      <li>Double-click Galapagos to open its editor. On the Options tab, set Fitness to Minimize.</li>
+      <li>On the Solvers tab, press Start Solver. When it stops, pick the best design in the list and press Reinstate to set the sliders to it.</li>
+      <li>Sizing inside Grasshopper is easiest if the section of each group is also a gene: a slider that picks a row from your section table. Add a penalty when any 検定比 is over 1. With a full Karamba licence, <b>Optimize Cross Section</b> can do the sizing instead, but it checks to Eurocode, not the Japanese rules.</li>
+    </ol>
+
+    <div class="watch">
+      <h4>Watch out: a flat optimum</h4>
+      <p>Eight of the designs here weigh within 3% of the best one. When the optimum is flat, the lightest design is rarely the right one: choose among the near-best by depth, number of joints, or appearance. Say that in your report instead of quoting one magic number.</p>
+    </div>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="o1-1"><q>Why add a large penalty to the weight of a design that breaks the deflection limit?</q>
+    <o correct>So it can never become the best design, while Galapagos can still learn from it</o><o>To make the solver run faster</o><o>Because Galapagos cannot handle failing designs</o>
+    <why>Galapagos only sees the fitness number. A penalty pushes failing designs to the bottom of the ranking but still tells the solver how close they came.</why></drill>
+    <drill id="o1-2"><q>Can Galapagos move a number typed into a Panel?</q>
+    <o>Yes, any number can be a gene</o><o correct>No, genes must be sliders or gene pools</o><o>Only if the panel is wired into the Fitness</o>
+    <why>Galapagos changes values by moving sliders. Turn the panel value into a slider if you want it searched.</why></drill>
+    <drill id="o1-3"><q>Two runs with different seeds give slightly different best designs. What does that tell you?</q>
+    <o>One of the runs is wrong</o><o correct>The search is random, and several designs are almost equally good</o><o>Galapagos needs more sliders</o>
+    <why>The solver starts from random designs and mutates them randomly. When the optimum is flat, different runs stop at different near-best designs.</why></drill>
+    <bug id="o1-b" def="bug_o1" answer="gal"><q>Galapagos was meant to find the lightest truss, but it keeps choosing the deepest and heaviest one. Click the component whose input is wired to the wrong output.</q>
+    <hint>Which number is Galapagos making smaller?</hint>
+    <why>Fitness is wired to d, the deflection, so Galapagos makes the truss as stiff as possible, which means deep and heavy. Wire kg plus the penalty into Fitness.</why></bug>
+    <challenge id="o1-c" title="Let Galapagos size the members">
+    <task><p>Add four section sliders, one per member group, that each pick a pipe from a table. Add them to the genome, with a penalty for any 検定比 above 1, and let Galapagos find depth, panels, type and sections together.</p></task>
+    <done><li>The genome has 7 sliders.</li><li>No member in the best design has a ratio above 1.</li><li>The best weight is within about 10% of the 1,107 kg found by brute force on this page.</li></done>
+    <hint>A penalty of 1,000 kg for each member over 1.0 is simple and works.</hint>
+    <hint>Seven genes take longer. In the Galapagos options, raise the population, or let it run more generations.</hint>
+    <solution><ol><li>A table of pipes with A and i. Four sliders from 0 to the last row, each into List Item.</li><li>Ratios for every member as in Session {{n:m1}}. <b>Larger Than</b> 1, then <b>Mass Addition</b> (Maths, Operators) counts the failures.</li><li>Fitness = weight + 1,000 × failures + the deflection penalty.</li></ol></solution>
+    </challenge>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-o1-a" data-id="o1-a"><span>I set up Galapagos with a genome, a fitness and a penalty</span></label></li>
+      <li><label><input type="checkbox" id="t-o1-b" data-id="o1-b"><span>I compared its answer with a brute-force or second run</span></label></li>
+      <li><label><input type="checkbox" id="t-o1-c" data-id="o1-c"><span>I can explain what a flat optimum means for the decision</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="o2">
+    <h3><span class="sn">{{sn}}</span>Trade-offs and the Pareto front</h3>
+    <p class="goal">By the end you can show a client the trade-off between two goals and explain which designs are worth discussing.</p>
+
+    <h4>Idea</h4>
+    <p>Real decisions have more than one goal. A deeper truss is lighter, but it costs ceiling height and cladding. A stiffer truss is heavier. A design is <b>Pareto optimal</b> when no other design is better on both goals at once. Those designs form the <b>Pareto front</b>; every design off the front can be beaten on both goals.</p>
+    <p>The engineer's job is to show the front and say where the good choices are. The client or architect then picks a point on it. Galapagos searches for one number only. Plug-ins such as Wallacei and Octopus search for several at once, but they run on Windows, so try them on a lab or office PC.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="o2"></div>
+      <figcaption>Each blue dot is one truss that passes the member checks. Green is the front. Lower the maximum depth to 2.0 m, as an architect might for headroom, and see what it costs in steel.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li><b>Data Recorder</b> (Params, Util) records every value that passes through it. Record weight and depth while Galapagos runs, or while you step a slider.</li>
+      <li>Plot the results in Rhino: Construct Point with x = weight / 1000 and y = depth. Scale the axes so the cloud is readable.</li>
+      <li>Mark the front: sort by weight, then keep each point whose depth is lower than every lighter point's. A short GhPython script does this neatly; by eye on the plot is fine to start.</li>
+    </ol>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="o2-1"><q>Design A weighs 1,200 kg with a depth of 2.4 m, B weighs 1,350 kg at 2.0 m, and C weighs 1,400 kg at 2.4 m. Which design is not on the Pareto front?</q>
+    <o>A</o><o>B</o><o correct>C</o>
+    <why>A is lighter than C at the same depth, so C is beaten on one goal and equal on the other. A and B each win on one goal.</why></drill>
+    <drill id="o2-2"><q>The architect caps the depth at 2.0 m. What happens to the lightest acceptable design?</q>
+    <o correct>It can only get heavier or stay the same</o><o>It gets lighter</o><o>It does not change</o>
+    <why>A cap removes options; it never adds better ones. On this page, a 2.0 m cap costs about 25% more steel than the unconstrained best.</why></drill>
+    <challenge id="o2-c" title="A trade-off chart in Rhino">
+    <task><p>Record at least 30 truss designs with Data Recorder and plot steel weight against depth as points in Rhino. Mark the Pareto front.</p></task>
+    <done><li>At least 30 points, with labelled axes made from text dots or lines.</li><li>The front is highlighted in a different colour.</li></done>
+    <hint>Use Text Tag (Display, Dimensions) to label a few points with their depth and panel count.</hint>
+    <solution><ol><li>Data Recorder on weight and on depth, with the same capacity.</li><li>Construct Point (weight / 1000, depth, 0).</li><li>Sort List by weight, then a running minimum of depth picks out the front; draw those points in green with Custom Preview.</li></ol></solution>
+    </challenge>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-o2-a" data-id="o2-a"><span>I can explain what a Pareto front is with an example</span></label></li>
+      <li><label><input type="checkbox" id="t-o2-b" data-id="o2-b"><span>I can say what a depth limit costs in steel</span></label></li>
+      <li><label><input type="checkbox" id="t-o2-c" data-id="o2-c"><span>I plotted a trade-off chart from recorded designs</span></label></li>
+    </ul>
+  </article>
+</section>
+

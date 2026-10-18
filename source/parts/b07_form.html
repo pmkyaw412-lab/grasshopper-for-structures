@@ -1,0 +1,240 @@
+<!-- ================= DESIGN WITH DATA ================= -->
+<section class="stage" id="form" data-stage="form">
+  <header>
+    <h2>Design with data</h2>
+    <p>Architects use Grasshopper to shape buildings with numbers: floors that grow and shrink, openings that open towards a view, towers that twist. A structural engineer at an office like Arup sits next to that work every day. These four sessions teach the same tools, and each one ends with the question an engineer would ask.</p>
+  </header>
+
+  <article class="session" id="f1">
+    <h3><span class="sn">{{sn}}</span>Domains, Remap and Graph Mapper</h3>
+    <p class="goal">By the end you can turn any list of numbers into the range you need, and shape how a value changes from bottom to top with a curve.</p>
+
+    <h4>Idea</h4>
+    <p>A <b>domain</b> is a range of numbers, written <code>0 To 24</code> in Grasshopper. <b>Bounds</b> finds the domain of a list: the smallest and the largest value. <b>Remap Numbers</b> moves values from one domain to another and keeps their proportions. A value 30% of the way through the source domain lands 30% of the way through the target.</p>
+    <p><b>Graph Mapper</b> bends numbers between 0 and 1 along a curve that you choose and can edit by dragging its grips. Put the three together and you get the most common pattern in design work:</p>
+    <ol class="steps">
+      <li>Take an index, such as the floor number: 0, 1, 2 and up.</li>
+      <li>Remap it to 0 To 1 with Bounds as the source.</li>
+      <li>Shape it with Graph Mapper.</li>
+      <li>Remap it again to the real design range, such as a plate scale from 0.7 to 1.2.</li>
+    </ol>
+    <p>The same pattern sets a beam's depth along its span, the camber of a truss (キャンバー), or the size of members up a tower.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="f1"></div>
+      <figcaption>The left box is the graph, the right is the tower. Each dot on the graph is one floor. The graph shapes here imitate Graph Mapper's types; in Rhino you can also drag the grips to make your own.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li><b>Series</b> with step 1 and count 20 for the floor numbers. <b>Multiplication</b> by 4 gives the floor heights.</li>
+      <li><b>Bounds</b> (Maths, Domain) on the floor numbers, into the S input of <b>Remap Numbers</b> (Maths, Domain). Leave T at its default, 0 To 1.</li>
+      <li><b>Graph Mapper</b> (Params, Input). Right-click it and pick a graph type. Wire the remapped values in.</li>
+      <li><b>Construct Domain</b> (Maths, Domain) from two sliders, 0.7 and 1.2, into the T input of a second Remap Numbers.</li>
+      <li>Floor plates: <b>XY Plane</b> (Vector, Plane) with origins at (0, 0, height), then <b>Rectangle</b> (Curve, Primitive) on each plane with its X and Y inputs set to the domain <code>-15 To 15</code>, so each 30 m square is centred on its plane.</li>
+      <li><b>Scale</b> (Transform, Affine) each rectangle about its plane origin by the factor. Then <b>Loft</b> (Surface, Freeform) through all of them for the skin.</li>
+    </ol>
+
+    <div class="watch">
+      <h4>Watch out: Graph Mapper expects 0 to 1</h4>
+      <p>A Graph Mapper's graph is drawn for inputs from 0 to 1 unless you change its domain. Feed it floor numbers 0 to 19 directly and almost everything falls off the graph. Always remap first.</p>
+    </div>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="f1-1"><q>Remap Numbers gets the value 6, source <code>0 To 10</code> and target <code>100 To 200</code>. What comes out?</q>
+    <o>106</o><o correct>160</o><o>0.6</o>
+    <why>6 is 60% of the way through the source, so it lands 60% of the way through the target: 100 + 0.6 × 100 = 160.</why></drill>
+    <drill id="f1-2"><q>What does Bounds return for the list 3, 9, 1, 7?</q>
+    <o>3 To 7</o><o correct>1 To 9</o><o>0 To 9</o>
+    <why>Bounds returns the smallest and the largest value in the list, whatever their order.</why></drill>
+    <drill id="f1-3"><q>Graph Mapper is set to Linear. What does it do to the values?</q>
+    <o correct>Nothing; they come out unchanged</o><o>Doubles them</o><o>Sorts them</o>
+    <why>A straight line from (0, 0) to (1, 1) maps every value to itself. It is a good default to wire up first, before you choose a shape.</why></drill>
+    <bug id="f1-b" def="bug_f1" answer="bd"><q>Remap Numbers should turn the floor numbers 0 to 19 into 0 to 1, but the panel stops at 0.25. Click the component that is fed the wrong list.</q>
+    <hint>What is Bounds measuring?</hint>
+    <why>Bounds measures the floor heights, 0 to 76 m, instead of the floor numbers, so floor 19 maps to 19 / 76 = 0.25. Feed Bounds the same list that goes into V.</why></bug>
+    <challenge id="f1-c" title="A haunched beam (ハンチ)">
+    <task><p>Draw the bottom edge of a 12 m steel beam that is 600 mm deep at both supports and 400 mm deep across the middle, with a smooth change between. Use Graph Mapper for the shape and sliders for both depths.</p></task>
+    <done><li>The depth is 0.6 m at both ends and 0.4 m at mid-span.</li><li>Changing the graph type changes the shape of the haunch, but never the end depths.</li></done>
+    <hint>Divide the beam line into points, remap their x positions to 0 To 1, then shape them with a Parabola graph.</hint>
+    <hint>The Parabola graph gives 0 at both ends and 1 in the middle. Remap that to the target 0.6 To 0.4, so 0 becomes 0.6 and 1 becomes 0.4.</hint>
+    <solution><ol><li>Divide Curve on the beam line, N = 24. Deconstruct Point for x.</li><li>Remap x with Bounds as source, into Graph Mapper set to Parabola.</li><li>Remap the result with target <code>0.6 To 0.4</code> (Construct Domain with A = 0.6, B = 0.4).</li><li>Construct Point (x, 0, −depth) and Interpolate for the bottom edge.</li></ol></solution>
+    </challenge>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-f1-a" data-id="f1-a"><span>I can work out a Remap Numbers result by hand</span></label></li>
+      <li><label><input type="checkbox" id="t-f1-b" data-id="f1-b"><span>I built the tower plates with Graph Mapper and two Remaps</span></label></li>
+      <li><label><input type="checkbox" id="t-f1-c" data-id="f1-c"><span>I can predict the shape a graph type gives before I switch to it</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="f2">
+    <h3><span class="sn">{{sn}}</span>An attractor point on a facade</h3>
+    <p class="goal">By the end you can drive a facade pattern from a point, and cut the number of different panels without losing the pattern.</p>
+
+    <h4>Idea</h4>
+    <p>An <b>attractor</b> is a point that changes things according to their distance from it. Measure the distance from every panel centre to the point, remap those distances, and use the result as the opening size. Openings grow towards a view or shrink towards a neighbour.</p>
+    <p>The design question that follows always reaches the engineer and the contractor: if every panel is different, every panel is a separate drawing and a separate mould. <b>Rationalising</b> means rounding the sizes into a few types (パネルの種類). Five types can keep the look of a smooth pattern at a fraction of the cost.</p>
+
+    <h4>Example</h4>
+    <ol class="steps">
+      <li>Panels: a facade surface into <b>Divide Domain²</b> (Maths, Domain) and <b>Isotrim</b> (Surface, Util). Each panel is a small surface.</li>
+      <li>Centres: <b>Area</b> (Surface, Analysis) returns the centroid of each panel.</li>
+      <li><b>Distance</b> (Vector, Point) from each centroid to the attractor.</li>
+      <li><b>Bounds</b> and <b>Remap Numbers</b> turn the distances into opening factors, for example from 0.85 near the point to 0.15 far away.</li>
+      <li><b>Scale</b> each panel about its centroid by its factor. That scaled panel is the opening.</li>
+    </ol>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="f2"></div>
+      <figcaption>Drag the green point, or use the Point X and Point Z sliders. Then set Panel types to 4 and watch the number of different opening sizes drop while the pattern stays readable.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Draw a 30 m by 12 m rectangle in the Front view and make a surface from it with <code>PlanarSrf</code>. Reference it in a Surface parameter.</li>
+      <li>Build the five steps above. Reference a Rhino point as the attractor, so you can drag it with the Gumball.</li>
+      <li>To rationalise, insert four components between the two Remaps: remap to <code>0 To 1</code>, multiply by (types − 1), <b>Round</b> (Maths, Util), divide by (types − 1), then remap to your real range.</li>
+      <li>Count the different sizes: <b>Create Set</b> (Sets, Sets) keeps one copy of each value; <b>List Length</b> counts them.</li>
+    </ol>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="f2-1"><q>An opening factor of 0.5 scales a 2 m by 3 m panel about its centre. What is the opening area?</q>
+    <o>3.0 m²</o><o correct>1.5 m²</o><o>0.75 m²</o>
+    <why>Scale shrinks both directions: 1 m by 1.5 m = 1.5 m², a quarter of the panel. Opening area goes with the factor squared.</why></drill>
+    <drill id="f2-2"><q>You rationalise into 3 types between 0.2 and 0.8. Which factors can a panel have?</q>
+    <o correct>0.2, 0.5 and 0.8</o><o>0.2, 0.4 and 0.6</o><o>Any value between 0.2 and 0.8</o>
+    <why>Three evenly spaced steps include both ends: 0.2, 0.5 and 0.8.</why></drill>
+    <bug id="f2-b" def="bug_f2" answer="sc"><q>The openings come out many times larger than the panels. Click the component that receives the wrong numbers.</q>
+    <hint>Read the panel. What unit are those numbers in?</hint>
+    <why>Scale's F input gets raw distances in metres, so a panel 12 m from the point is scaled 12 times. Remap the distances to the factor range first.</why></bug>
+    <challenge id="f2-c" title="Two attractors">
+    <task><p>Add a second attractor point. Each opening should respond to whichever point is nearer.</p></task>
+    <done><li>Openings grow near either point.</li><li>Moving one point changes only the panels nearer to it.</li></done>
+    <hint>Measure the distance to each point, then keep the smaller of the two for every panel.</hint>
+    <solution><ol><li>Two Distance components, one per attractor.</li><li><b>Minimum</b> (Maths, Util) of the two distance lists, item by item.</li><li>The rest is unchanged: Bounds, Remap, Scale. A Point parameter can also hold several points; then use <b>Closest Point</b> (Vector, Point), whose D output is the distance to the nearest one.</li></ol><def name="sol_f2"/><p>Above: the rounding chain for panel types, for reference. Remap to 0 To 1, multiply, round, divide, then remap to your range before Scale.</p></solution>
+    </challenge>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-f2-a" data-id="f2-a"><span>My facade openings follow an attractor point I can drag in Rhino</span></label></li>
+      <li><label><input type="checkbox" id="t-f2-b" data-id="f2-b"><span>I rounded the openings into a set number of panel types</span></label></li>
+      <li><label><input type="checkbox" id="t-f2-c" data-id="f2-c"><span>I can explain to an architect why five panel types are cheaper than two hundred</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="f3">
+    <h3><span class="sn">{{sn}}</span>A twisting tower and its diagrid</h3>
+    <p class="goal">By the end you can build a twisting, tapering tower, wrap it in a diagrid, and say what the twist does to its columns.</p>
+
+    <h4>Idea</h4>
+    <p>A tower is a list of floor plates. Give each floor an angle and a scale and the whole form follows. Graph Mapper decides how the twist is shared: evenly, mostly at the top, or slowly at both ends.</p>
+    <p>For the engineer, a twist means that a column following the corners leans, and a leaning column pushes sideways at every floor. A <b>diagrid</b> (ダイアグリッド) avoids that: diagonal members in a triangulated net carry both gravity and wind or earthquake load. Towers such as 30 St Mary Axe in London, engineered by Arup, use one.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="f3"></div>
+      <figcaption>Switch Skin between floor plates and diagrid. With plates, watch the corner lines lean more as you add twist. The diagrid nodes are on every second floor.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Floor plates as in Session {{n:f1}}: planes at each floor height and a 30 m square on each.</li>
+      <li>Angles: remap the floor numbers to 0 To 1, Graph Mapper, then multiply by the total twist in degrees.</li>
+      <li><b>Rotate</b> (Transform, Euclidean) each plate about its own plane. Its A input expects radians: convert with <b>Radians</b> (Maths, Trigonometry), or right-click A and choose Degrees.</li>
+      <li>Taper: Scale each plate about its centre with a factor that runs from 1 at the base to your top scale.</li>
+      <li>Diagrid: <b>Divide Curve</b> on every second plate gives the nodes, one branch per level. Connect node j on one level to nodes j and j + 1 on the next with Shift List. On every second level, shift the division by half a spacing so the diagonals cross between floors.</li>
+    </ol>
+
+    <div class="watch">
+      <h4>Watch out: degrees and radians</h4>
+      <p>Grasshopper's angle inputs work in radians unless you tell them otherwise. A twist of 90 typed as radians is about 14 full turns. If your tower looks like a spring, check the angle input first.</p>
+    </div>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="f3-1"><q>A 40-floor tower twists 120° in total with a Linear graph. How much does each floor rotate relative to the one below?</q>
+    <o correct>3°</o><o>4°</o><o>0.3°</o>
+    <why>A Linear graph shares the twist evenly: 120 / 40 = 3° per floor.</why></drill>
+    <drill id="f3-2"><q>With a Sigmoid graph instead, where do the floors rotate fastest?</q>
+    <o>At the base</o><o correct>Around mid-height</o><o>At the top</o>
+    <why>A Sigmoid is flat at both ends and steep in the middle, so most of the twist happens around mid-height.</why></drill>
+    <bug id="f3-b" def="bug_f3" answer="rot|mu"><q>The tower should twist 90 degrees from base to top, but the plates spin round many times. Click the component whose input receives the wrong unit.</q>
+    <hint>What unit does an angle input expect unless you change it?</hint>
+    <why>Rotate's A input expects radians and receives up to 90, which is about 14 turns. Put Radians after Multiplication, or right-click A and choose Degrees.</why></bug>
+    <challenge id="f3-c" title="How much do the corner columns lean?">
+    <task><p>Draw a column through the corner of every floor plate of a twisting tower, and find the largest angle a column segment makes with the vertical.</p></task>
+    <done><li>Four corner polylines, one per corner.</li><li>A panel shows the largest lean in degrees, and it grows when you increase the twist.</li></done>
+    <hint>Explode each plate to get its corners: Discontinuity (Curve, Analysis) or Control Points gives them. Then Flip Matrix so each branch is one corner up the tower.</hint>
+    <hint>Vector 2Pt between consecutive corners, then <b>Angle</b> (Vector, Vector) against Unit Z. Degrees from Radians' partner, <b>Degrees</b> (Maths, Trigonometry).</hint>
+    <solution><ol><li>Discontinuity on each plate rectangle gives its 4 corners, in a tree by floor. Flip Matrix makes one branch per corner.</li><li>Polyline per branch for the columns.</li><li>Vector 2Pt from each corner to the same corner one floor up (Shift List, Wrap False), Angle against Unit Z, Degrees, then Sort List and List Item i = −1 for the largest.</li></ol></solution>
+    </challenge>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-f3-a" data-id="f3-a"><span>My tower twists and tapers from sliders, with the twist shaped by Graph Mapper</span></label></li>
+      <li><label><input type="checkbox" id="t-f3-b" data-id="f3-b"><span>I built a diagrid on the tower</span></label></li>
+      <li><label><input type="checkbox" id="t-f3-c" data-id="f3-c"><span>I can explain why twisted corner columns push sideways and how a diagrid helps</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="f4">
+    <h3><span class="sn">{{sn}}</span>Panels on a curved roof</h3>
+    <p class="goal">By the end you can measure how far each panel of a curved roof is from flat, and choose a geometry that gives flat panels.</p>
+
+    <h4>Idea</h4>
+    <p>Glass and metal panels are cheapest when they are flat. On most curved surfaces, the four corners of a panel do not lie in one plane. The panel is <b>warped</b>, and the amount is called its deviation from flat. <b>Plane Fit</b> (Vector, Plane) finds the plane closest to a set of points and reports how far they are from it.</p>
+    <p>Three ways out, each with a cost:</p>
+    <ul>
+      <li><b>Triangles</b> are always flat, but you get twice the panels and more joints.</li>
+      <li><b>Smaller panels</b> warp less, but there are more of them.</li>
+      <li><b>A translation surface</b>, made by sliding one curve along another, gives flat four-sided panels on a doubly curved roof. Engineers such as Jörg Schlaich and Hans Schober used this for glass grid shells.</li>
+    </ul>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="f4"></div>
+      <figcaption>Compare the three surfaces at the same grid. The translation dome reads 0 mm everywhere, the spherical dome varies, and the hypar saddle is warped by the same amount in every panel.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>A hypar from four corner points: <b>4Point Surface</b> (Surface, Freeform) with two high and two low corners.</li>
+      <li>Divide Domain² and Isotrim for the panels.</li>
+      <li><b>Deconstruct Brep</b> (Surface, Analysis): its V output gives the corner points of each panel, one branch per panel.</li>
+      <li><b>Plane Fit</b> on those points. Its dx output is the deviation. Multiply by 1000 for millimetres.</li>
+      <li>Compare with a tolerance using <b>Larger Than</b> (Maths, Operators), and colour the panels with Custom Preview.</li>
+    </ol>
+
+    <div class="practice"><h4>Practice</h4>
+    <drill id="f4-1"><q>Which panel shape is always flat, whatever the surface?</q>
+    <o correct>A triangle</o><o>A square</o><o>A hexagon</o>
+    <why>Any three points define a plane, so a triangle can never be warped.</why></drill>
+    <drill id="f4-2"><q>On a hypar, you halve the panel size in both directions. Roughly what happens to each panel's deviation?</q>
+    <o>It halves</o><o correct>It drops to about a quarter</o><o>It stays the same</o>
+    <why>On a hypar the warp of a panel grows with its width times its length, so halving both gives about a quarter.</why></drill>
+    <bug id="f4-b" def="bug_f4" answer="fl"><q>You expected one deviation per panel, but the panel shows a single number. Click the component to remove.</q>
+    <hint>How many branches reach Plane Fit?</hint>
+    <why>Flatten Tree pours the corners of every panel into one list, so Plane Fit fits a single plane to the whole roof. Remove it and Plane Fit runs once per panel branch.</why></bug>
+    <challenge id="f4-c" title="Flat panels on a dome">
+    <task><p>Build a dome-like roof from two arcs as a translation surface, panel it with quads, and show that every panel is flat.</p></task>
+    <done><li>Every panel's deviation is below 0.1 mm.</li><li>The roof is curved in both directions.</li></done>
+    <hint><b>Sum Surface</b> (Surface, Freeform) makes a surface from two edge curves by sliding one along the other.</hint>
+    <solution><ol><li>Two arcs that share an end point: one in the XZ plane, one in the YZ plane.</li><li>Sum Surface from the two arcs.</li><li>Divide Domain², Isotrim, Deconstruct Brep, Plane Fit as in the session. All dx values are close to zero.</li></ol></solution>
+    </challenge>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-f4-a" data-id="f4-a"><span>I measured panel deviation with Plane Fit and coloured the panels by it</span></label></li>
+      <li><label><input type="checkbox" id="t-f4-b" data-id="f4-b"><span>I can name three ways to get flat panels and the cost of each</span></label></li>
+      <li><label><input type="checkbox" id="t-f4-c" data-id="f4-c"><span>I can explain why a translation surface gives flat quads</span></label></li>
+    </ul>
+  </article>
+</section>
+

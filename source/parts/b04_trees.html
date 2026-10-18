@@ -1,0 +1,134 @@
+<!-- ================= DATA TREES ================= -->
+<section class="stage" id="trees" data-stage="trees">
+  <header>
+    <h2>Data trees</h2>
+    <p>A list handles one row of things. A building has rows of rows: nodes per floor, beams per bay per floor. Grasshopper stores those as a tree. Trees are the hardest idea in the course and the one that separates people who can use Grasshopper at work from people who cannot.</p>
+  </header>
+
+  <article class="session" id="s10">
+    <h3><span class="sn">{{sn}}</span>What a tree is</h3>
+    <p class="goal">By the end you can read a tree's structure in a Param Viewer and say how many branches it has and how long each one is.</p>
+
+    <h4>Idea</h4>
+    <p>A <b>data tree</b> (データツリー) is a set of lists. Each list is a <b>branch</b>, and each branch has an address called a <b>path</b>, written in curly brackets: <code>{0}</code>, <code>{1}</code>, <code>{0;2}</code>. A plain list is a tree with one branch, <code>{0}</code>.</p>
+    <p>Trees appear on their own. Give <b>Divide Curve</b> three curves and ask for 4 segments each. It returns 15 points, and it keeps them in three branches of 5 so you still know which point belongs to which curve.</p>
+
+    <h4>Example</h4>
+    <figure class="def">
+      <div data-def="tree3"></div>
+      <figcaption>Three curves in, three branches out. The dashed wire is how Grasshopper draws a wire that carries a tree. Double-click a Param Viewer to switch between this text view and a diagram.</figcaption>
+    </figure>
+    <pre class="tree" aria-label="The same tree written out">{0;0}   N = 5     points on curve 0
+  0  point
+  1  point
+  2  point
+  3  point
+  4  point
+{0;1}   N = 5     points on curve 1
+{0;2}   N = 5     points on curve 2</pre>
+    <p>Read a path from the right. The last number is the newest level: here it is the index of the curve. The <code>0</code> in front is left over from the input list. <b>Simplify Tree</b> removes the part all paths share, which turns these into <code>{0}</code>, <code>{1}</code>, <code>{2}</code>. The live examples on this page show simplified paths.</p>
+    <p>The rule that makes trees useful: <b>a component runs once per branch</b>. Polyline given this tree draws three polylines, one through each branch.</p>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Draw three separate lines in Rhino. Reference all three in one Curve parameter with Set Multiple Curves.</li>
+      <li>Wire it into Divide Curve with N = 4, then wire the P output into a <b>Param Viewer</b> (Params, Util) and into a panel.</li>
+      <li>Read the paths. Then right-click the P output, choose Simplify, and read them again.</li>
+      <li>Wire P into <b>Polyline</b>. Count the polylines.</li>
+    </ol>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s10-a" data-id="s10-a"><span>I can say what a branch and a path are</span></label></li>
+      <li><label><input type="checkbox" id="t-s10-b" data-id="s10-b"><span>I can read branch count and branch length from a Param Viewer</span></label></li>
+      <li><label><input type="checkbox" id="t-s10-c" data-id="s10-c"><span>I can recognise a tree by its dashed wire</span></label></li>
+      <li><label><input type="checkbox" id="t-s10-d" data-id="s10-d"><span>I know that a component runs once per branch</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="s11">
+    <h3><span class="sn">{{sn}}</span>Flatten, Graft and Flip Matrix</h3>
+    <p class="goal">By the end you can reshape a tree on purpose, and recognise the two classic mistakes when you see them.</p>
+
+    <h4>Idea</h4>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Operation</th><th>What it does</th><th>Typical use</th></tr></thead>
+        <tbody>
+          <tr><td>Flatten</td><td>Pours every branch into one list</td><td>Counting, or sending all members to the analysis at once</td></tr>
+          <tr><td>Graft</td><td>Gives every item its own branch</td><td>Making a component treat each item separately</td></tr>
+          <tr><td>Simplify</td><td>Removes the shared part of the paths</td><td>Tidying paths so two trees can match</td></tr>
+          <tr><td>Flip Matrix</td><td>Swaps rows and columns</td><td>Turning "by floor" into "by column line"</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>All four exist as components under Sets, Tree. Flatten, Graft and Simplify are also one right-click away on any input or output, and a small icon appears on the port when one is active.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s11"></div>
+      <figcaption>The points are stored one branch per floor. Change the operation in the dark box and watch three things: the Param Viewer, the wire style, and what Polyline draws.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Build a grid of points with one branch per floor. The quickest way is in the next session. For now, use your three divided curves from Session {{n:s10}} as the three floors.</li>
+      <li>Wire the points into Polyline four times, each through a different operation, and compare.</li>
+      <li>With Flip Matrix, check the Param Viewer before and after: the number of branches and the length of each branch swap places.</li>
+    </ol>
+
+    <div class="watch">
+      <h4>Watch out: Flip Matrix needs a full rectangle</h4>
+      <p>Flip Matrix expects every branch to have the same number of items. If one floor has a column missing, the rows no longer line up, and the result is not what you expect. Check branch lengths in a Param Viewer first.</p>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s11-a" data-id="s11-a"><span>I can predict the Param Viewer result of Flatten, Graft and Flip Matrix</span></label></li>
+      <li><label><input type="checkbox" id="t-s11-b" data-id="s11-b"><span>I can explain why a flattened tree gives one zigzag polyline</span></label></li>
+      <li><label><input type="checkbox" id="t-s11-c" data-id="s11-c"><span>I can explain why Polyline turns orange after Graft</span></label></li>
+      <li><label><input type="checkbox" id="t-s11-d" data-id="s11-d"><span>I used the right-click Flatten, Graft and Simplify on a port</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="s12">
+    <h3><span class="sn">{{sn}}</span>A multi-storey frame, organised by floor</h3>
+    <p class="goal">By the end you have a frame for any number of storeys and bays, with beams stored by floor and columns stored by grid line.</p>
+
+    <h4>Idea</h4>
+    <p>Grafting one input is how you build a tree deliberately. Give Construct Point a plain list of X values and a <b>grafted</b> list of Z values. Each Z sits alone in its own branch, so the component runs once per level, and each run pairs that one Z with the whole X list. Out comes one branch of nodes per level.</p>
+
+    <h4>Example</h4>
+    <figure class="def">
+      <div data-def="frame"></div>
+      <figcaption>Four X values and four grafted Z values give four branches of four nodes: ground plus three floors. The Series count is bays + 1 and storeys + 1.</figcaption>
+    </figure>
+    <ol class="steps">
+      <li>Nodes by level: as in the figure.</li>
+      <li>Beams (梁): within each branch, Line from the nodes to the same nodes through Shift List, with Shortest List. Because a component runs once per branch, one Line component draws the beams of every floor. Remove the ground branch first with <b>Tree Branch</b> or by starting the Z series at the first floor.</li>
+      <li>Columns (柱): Flip Matrix on the nodes, so each branch is one grid line from bottom to top. Then the same Shift List trick draws every column.</li>
+    </ol>
+    <p>The output is two trees. Beams are grouped by floor, columns by grid line. That grouping is what lets you say "floors 1 to 3 get H-400, floors 4 to 6 get H-350" later.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s12"></div>
+      <figcaption>Tree Branch pulls one branch out by its path. Switch between the two trees and step through the branches.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Build the frame with four sliders: storeys, bays, storey height (階高) and bay width (スパン).</li>
+      <li>Put a Param Viewer on the beams and on the columns. Confirm the branch counts match the live example.</li>
+      <li>Use <b>Tree Branch</b> with path <code>{0}</code> to isolate the first-floor beams, and give them a different preview colour with <b>Custom Preview</b>.</li>
+    </ol>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s12-a" data-id="s12-a"><span>I can explain why grafting Z gives one branch of nodes per level</span></label></li>
+      <li><label><input type="checkbox" id="t-s12-b" data-id="s12-b"><span>I built a frame that follows storey and bay sliders</span></label></li>
+      <li><label><input type="checkbox" id="t-s12-c" data-id="s12-c"><span>My beams are grouped by floor and my columns by grid line</span></label></li>
+      <li><label><input type="checkbox" id="t-s12-d" data-id="s12-d"><span>I pulled out one floor with Tree Branch</span></label></li>
+    </ul>
+  </article>
+</section>

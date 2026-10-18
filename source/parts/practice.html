@@ -1,0 +1,346 @@
+<practice for="s1">
+<drill id="s1-1"><q>You drag the slider wired into the X input of Construct Point. Which way does the red point move in Perspective?</q>
+<o correct>Along the red X axis</o><o>Straight up, along Z</o><o>It does not move until you bake it</o>
+<why>X is the red axis in every Rhino viewport, Y is green and Z is blue. The preview updates as you drag; baking is only for keeping a copy.</why></drill>
+<drill id="s1-2"><q>What does a red object in the Rhino viewport tell you?</q>
+<o>It has an error</o><o correct>It is a Grasshopper preview, not yet a real Rhino object</o><o>It is selected</o>
+<why>Grasshopper draws its results in red by default. Selected Grasshopper geometry turns green. To get a real Rhino object you bake it, which you do in Session {{n:s6}}.</why></drill>
+<challenge id="s1-c" title="Put a point anywhere">
+<task><p>Wire three sliders into X, Y and Z of one Construct Point and move the point to (2, 3, 4).</p></task>
+<done><li>The point sits at x 2, y 3, z 4. Check it by typing <code>EvaluatePt</code> or by reading the three slider values.</li><li>Each slider moves the point along one axis only.</li></done>
+<hint>Every input of Construct Point accepts its own slider. Make three sliders first, then wire one into each input.</hint>
+<solution><def name="sol_s1"/><p>Three sliders, one per input. Set them to 2, 3 and 4.</p></solution>
+</challenge>
+</practice>
+
+<practice for="s2">
+<drill id="s2-1"><q>The last point you placed is the top of a column at (6, 0, 3.5). You type <code>r0,0,-3.5</code>. Where is the next point?</q>
+<o>(0, 0, −3.5)</o><o correct>(6, 0, 0)</o><o>(6, 0, 7)</o>
+<why>The <code>r</code> makes the coordinates relative to the last point, so you move 3.5 m down from (6, 0, 3.5) and land at the base, (6, 0, 0).</why></drill>
+<drill id="s2-2"><q>You drew a frame in the XZ plane. Which viewport shows it as a framing elevation (軸組図)?</q>
+<o>Top</o><o correct>Front</o><o>Right</o>
+<why>Front looks along the Y axis, so anything drawn in the XZ plane appears at its true shape. Top would show the frame as a single line.</why></drill>
+<challenge id="s2-c" title="Two storeys by hand">
+<task><p>Using only relative coordinates after the first point, draw a two-storey column line: columns at x = 0, 6 and 12 m, storey height 3.5 m, so each column is two lines stacked. Then draw the girders at both floor levels with Osnap.</p></task>
+<done><li>6 column lines and 4 girder lines.</li><li>Every girder end snaps exactly to a column end.</li></done>
+<hint>Start <code>Line</code> at <code>0,0,0</code>, then type <code>r0,0,3.5</code>. Start the next line from that end point with Osnap End.</hint>
+<hint>Draw one bay, select it and use <code>Copy</code> with a relative distance of <code>r6,0,0</code>.</hint>
+<solution><ol><li><code>Line</code> from <code>0,0,0</code> to <code>r0,0,3.5</code>, then <code>Line</code> from that end to <code>r0,0,3.5</code>.</li><li>Select both lines, <code>Copy</code>, base point <code>0,0,0</code>, targets <code>6,0,0</code> and <code>12,0,0</code>.</li><li>Turn on Osnap End and draw the four girders between column ends at z = 3.5 and z = 7.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s3">
+<drill id="s3-1"><q>Your model is in metres with an absolute tolerance of 0.001. Two beam ends are 0.4 mm apart. How does Rhino treat them?</q>
+<o correct>As the same point, because 0.4 mm is inside the 1 mm tolerance</o><o>As two separate points</o><o>It rounds both to the nearest metre</o>
+<why>0.4 mm is less than the 1 mm tolerance, so Rhino commands treat them as touching. An analysis plug-in may use its own tolerance, though. Karamba merges nodes closer than its own limit distance, so check both.</why></drill>
+<drill id="s3-2"><q>Which Rhino object type becomes a shell element in a structural analysis?</q>
+<o>Curve</o><o>Brep</o><o correct>Mesh</o>
+<why>Analysis plug-ins build shell elements from mesh faces. A surface or brep is usually meshed first.</why></drill>
+<challenge id="s3-c" title="A braced bay with tidy layers">
+<task><p>Add an X brace (ブレース) to the middle bay of your two-storey frame from the last session, on a new layer named <code>V</code>. Lock the <code>Grid</code> layer so you cannot move the points by accident.</p></task>
+<done><li>Four brace lines, two per storey, on layer <code>V</code>.</li><li>Every brace end snaps to a column-girder node.</li><li>The <code>Grid</code> layer shows a lock icon.</li></done>
+<hint>With Osnap End on, draw each diagonal from one corner of the bay to the opposite corner.</hint>
+<solution><ol><li>In the Layers panel make <code>V</code> and set it current.</li><li>Draw the four diagonals with Osnap End.</li><li>Click the lock icon next to <code>Grid</code>.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s4">
+<drill id="s4-1"><q>Point A is at the origin and point B is at (3, 0, 4). What does the Length panel show?</q>
+<o>7.00</o><o correct>5.00</o><o>4.00</o>
+<why>The line is the hypotenuse of a 3, 4, 5 triangle: √(3² + 4²) = 5.</why></drill>
+<drill id="s4-2"><q>A component is orange. Its balloon says an input "failed to collect data". What is the likely cause?</q>
+<o correct>Nothing is wired into that input</o><o>The component is broken and must be replaced</o><o>The result is too large to show</o>
+<why>Orange means a warning. The most common one is an empty input. Wire something in and it turns grey.</why></drill>
+<bug id="s4-b" def="bug_s4" answer="b"><q>You drag the Z slider and point B should move up in the Front view, but it moves into the screen instead. Click the component that is wired wrongly.</q>
+<hint>Follow the wire from the Z slider. Which input does it enter?</hint>
+<why>The Z slider is wired into the Y input of the second Construct Point, so B moves along Y, which points into the screen in the Front view. The length still looks right, which is why this bug hides. Rewire the slider into Z.</why></bug>
+<challenge id="s4-c" title="Measure a brace">
+<task><p>A bay is 6 m wide and the storey is 3.5 m high. Build a definition that gives the length of the diagonal brace, with sliders for bay width and storey height.</p></task>
+<done><li>The panel shows 6.95 for a 6 m by 3.5 m bay.</li><li>The value updates when you move either slider.</li></done>
+<hint>The brace runs from the origin to the point (bay width, 0, storey height).</hint>
+<solution><def name="sol_s4"/><p>√(6² + 3.5²) = 6.95 m.</p></solution>
+</challenge>
+</practice>
+
+<practice for="s5">
+<drill id="s5-1"><q>Span L = 8 m and height H = 4 m. What is the total length of the three portal members?</q>
+<o>12 m</o><o correct>16 m</o><o>24 m</o>
+<why>Two columns of 4 m and a beam of 8 m: 4 + 8 + 4 = 16 m.</why></drill>
+<drill id="s5-2"><q>You wire the points into Polyline in the order A, B, D, C. What do you see?</q>
+<o>The same portal frame</o><o correct>A line that crosses itself, from B down to D and back up to C</o><o>An orange Polyline</o>
+<why>Polyline joins points in the order they arrive. The data is valid, so there is no warning, but the shape is wrong.</why></drill>
+<bug id="s5-b" def="bug_s5" answer="C"><q>The panel should read 4.00, 8.00 and 4.00. It reads 4.00, 8.94 and 0.00. Click the component that is missing a wire.</q>
+<hint>A segment of length 0 means two points are in the same place. Which two?</hint>
+<why>Point C gets the span but not the height, so it sits at (8, 0, 0), the same place as D. The beam becomes a diagonal from B to C, and the last segment has no length. Wire H into C's Z input.</why></bug>
+<challenge id="s5-c" title="A gabled portal (山形ラーメン)">
+<task><p>Add a ridge point E at mid-span, raised above the eaves by a rise slider, so the frame has two rafters instead of a flat beam.</p></task>
+<done><li>Polyline runs A, B, E, C, D and Explode returns 4 members.</li><li>The ridge stays at mid-span when you change L, and moves up when you change the rise.</li></done>
+<hint>The ridge X is L / 2. Its Z is H + rise. Use Division and Addition from Maths, Operators.</hint>
+<solution><def name="sol_s5"/><p>Wire L into Division with B = 2 for the ridge X, and H plus rise into the ridge Z. Insert E between B and C in the Polyline input.</p></solution>
+</challenge>
+</practice>
+
+<practice for="s6">
+<drill id="s6-1"><q>You bake the divided points, then move the count slider. What happens to the baked points?</q>
+<o correct>They stay where they were</o><o>They move with the slider</o><o>They are deleted</o>
+<why>Baked geometry is a copy. It no longer listens to the definition. Bake again when you want the new version.</why></drill>
+<drill id="s6-2"><q>You internalise the referenced roof curve, then delete the curve in Rhino. What happens to the definition?</q>
+<o>It turns orange</o><o correct>It keeps working, because the curve now lives inside the .gh file</o><o>Grasshopper asks you to pick a new curve</o>
+<why>Internalise data copies the geometry into the parameter. The link to the Rhino object is gone, so deleting it changes nothing.</why></drill>
+<challenge id="s6-c" title="Columns along a curved wall">
+<task><p>Draw a curved wall line in the Top view. Place a 3.5 m column every 6 m along it, measured along the curve, and bake the columns to layer <code>C</code>.</p></task>
+<done><li>Moving a control point of the wall line moves the columns.</li><li>The columns are 6 m apart along the curve and 3.5 m tall.</li><li>Baked lines sit on layer <code>C</code>.</li></done>
+<hint>Divide Length (Curve, Division) places points at a fixed distance along a curve.</hint>
+<hint>Line SDL (Curve, Primitive) draws a line from a start point, a direction and a length. Use Unit Z for the direction.</hint>
+<solution><ol><li>Curve parameter, Set one Curve, pick the wall line.</li><li>Divide Length with L = 6.</li><li>Line SDL: S = the points, D = Unit Z, L = 3.5.</li><li>Right-click Line SDL, Bake, choose layer <code>C</code>.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s7">
+<drill id="s7-1"><q>Series with start 0, step 6 and count 4. What is the last value?</q>
+<o>24</o><o correct>18</o><o>4</o>
+<why>Four values: 0, 6, 12, 18. The last is start + step × (count − 1).</why></drill>
+<drill id="s7-2"><q>List Item gets a list of 4 points and i = 5, with its Wrap input left at the default. What comes out?</q>
+<o>Nothing</o><o correct>Index 1, the second item, because the index wraps round</o><o>Index 3, the last item</o>
+<why>Wrap is on by default, so the index wraps: 5 on a list of 4 lands on index 1. Set W to False and an index past the end returns nothing instead of a quiet wrap.</why></drill>
+<drill id="s7-3"><q>Cull Pattern gets 7 items and the pattern True, False. How many items are left?</q>
+<o correct>4</o><o>3</o><o>7</o>
+<why>The pattern repeats: items 0, 2, 4 and 6 are kept. That is 4 items.</why></drill>
+<bug id="s7-b" def="bug_s7" answer="rg"><q>You need 5 column lines between 0 and 24 m. The panel lists 6 points. Click the component that needs to change.</q>
+<hint>Count the gaps between 0 and 24, then count the points.</hint>
+<why>Range's N is the number of steps, so N = 5 gives 6 values. Set N to 4, or use Series with step 6 and count 5.</why></bug>
+<challenge id="s7-c" title="Columns and wind posts">
+<task><p>Make 9 points along X at 3 m spacing. Every other point gets a 4 m main column; the points between get 3 m wind posts (間柱).</p></task>
+<done><li>Two separate lists: 5 columns and 4 posts.</li><li>Columns are 4 m tall and posts 3 m tall.</li></done>
+<hint>Dispatch (Sets, List) splits a list in two with a true, false pattern.</hint>
+<solution><def name="sol_s7"/><p>Dispatch sends items 0, 2, 4, 6 and 8 to A and the rest to B. Draw each list with Line SDL using Unit Z and its own length.</p></solution>
+</challenge>
+</practice>
+
+<practice for="s8">
+<drill id="s8-1"><q>X receives 5 values and Y receives 2. With the default matching, how many points does Construct Point make?</q>
+<o>2</o><o correct>5</o><o>10</o>
+<why>Longest List pairs item by item and repeats the last Y for the remaining X values, so you get 5 points.</why></drill>
+<drill id="s8-2"><q>The same 5 and 2 values pass through Cross Reference first. How many points now?</q>
+<o>5</o><o>7</o><o correct>10</o>
+<why>Cross Reference pairs every X with every Y: 5 × 2 = 10.</why></drill>
+<bug id="s8-b" def="bug_s8" answer="pt"><q>The grid should have 12 column points, 4 by 3, but List Length says 4. Click the component whose inputs need a different matching rule.</q>
+<hint>What does a component do with two lists of different lengths when you add nothing in front of it?</hint>
+<why>Construct Point uses Longest List and pairs the values item by item. Put Cross Reference in front of its X and Y inputs to get every combination.</why></bug>
+<challenge id="s8-c" title="A three-storey column grid">
+<task><p>Build every node of a frame with 4 bays in X at 6 m, 3 bays in Y at 8 m and 3 storeys at 3.5 m. Then draw a column from every ground node up to the roof.</p></task>
+<done><li>5 × 4 × 4 = 80 nodes.</li><li>20 columns, each 10.5 m tall.</li><li>Changing a bay count slider updates everything.</li></done>
+<hint>Zoom in on Cross Reference until a plus sign appears, then add a third input.</hint>
+<hint>For the columns you only need the ground nodes. Cross Reference X and Y on their own gives those.</hint>
+<solution><ol><li>Three Series: step 6 count 5, step 8 count 4, step 3.5 count 4.</li><li>Cross Reference with three inputs into Construct Point for the nodes.</li><li>A second Cross Reference with X and Y only for the ground nodes, then Line SDL with Unit Z and length 10.5.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s9">
+<drill id="s9-1"><q>Shift List gets the list 0, 1, 2, 3, 4, 5 with S = 1 and Wrap = False. What comes out?</q>
+<o correct>1, 2, 3, 4, 5</o><o>1, 2, 3, 4, 5, 0</o><o>0, 1, 2, 3, 4</o>
+<why>Everything slides one place towards the front. With Wrap off, the first item is dropped instead of moving to the end.</why></drill>
+<drill id="s9-2"><q>How many members does a parallel-chord truss with 8 panels have?</q>
+<o>32</o><o correct>33</o><o>17</o>
+<why>8 bottom chords, 8 top chords, 9 verticals and 8 diagonals: 4n + 1 = 33.</why></drill>
+<bug id="s9-b" def="bug_s9" answer="w|sh"><q>The bottom chord of 6 nodes should have 5 segments. You get 6, and one runs from the last node back to the first. Click the component to change.</q>
+<hint>Which input decides what happens to the item pushed off the front of the list?</hint>
+<why>The Boolean Toggle sets Shift List's Wrap to True, so node 0 comes back at the end and is paired with node 5. Set the toggle to False.</why></bug>
+<challenge id="s9-c" title="Pratt or Howe from one switch">
+<task><p>Add a Boolean Toggle to your truss that flips every diagonal, so the same definition draws a Pratt truss or a Howe truss.</p></task>
+<done><li>True draws the Pratt diagonals, False the Howe diagonals.</li><li>The member count stays 4n + 1.</li></done>
+<hint>Build both sets of diagonals, then choose one with Stream Filter (Sets, Tree). Its G input picks which stream passes.</hint>
+<solution><ol><li>Pratt diagonals: Line from the bottom nodes to the shifted top nodes in the left half, mirrored in the right half, as in the session.</li><li>Howe diagonals: the same with top and bottom swapped.</li><li>Stream Filter with the Howe set in input 0 and the Pratt set in input 1. Wire the Boolean Toggle into G: True is read as 1 and picks the Pratt set, False is read as 0 and picks the Howe set.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s10">
+<drill id="s10-1"><q>Divide Curve gets 4 curves and N = 5. What is the shape of its point output?</q>
+<o>One branch of 20 points</o><o correct>4 branches of 6 points</o><o>5 branches of 4 points</o>
+<why>Each curve keeps its own branch, and N = 5 segments gives 6 points per curve.</why></drill>
+<drill id="s10-2"><q>Polyline gets a tree of 3 branches with 4 points each. How many polylines are drawn?</q>
+<o correct>3</o><o>1</o><o>12</o>
+<why>A component runs once per branch, so there is one polyline per branch.</why></drill>
+<challenge id="s10-c" title="The first point of every floor">
+<task><p>Draw three horizontal lines at z = 0, 3.5 and 7 m. Divide each into 4 segments, then pick the first point of every line and join those points into a column line.</p></task>
+<done><li>List Item with i = 0 returns 3 points, one per branch.</li><li>A single vertical polyline joins them.</li></done>
+<hint>List Item works inside every branch at once. You will get one item per branch.</hint>
+<hint>The three single items are still in three branches. Flatten before Polyline, or Polyline will have nothing to join.</hint>
+<solution><ol><li>Divide Curve on the three lines, N = 4.</li><li>List Item with i = 0.</li><li>Flatten the List Item output (right-click, Flatten), then Polyline.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s11">
+<drill id="s11-1"><q>A tree has branches {0}, {1} and {2} with 4 items each. What does Flatten give?</q>
+<o correct>One branch of 12 items</o><o>12 branches of 1 item</o><o>4 branches of 3 items</o>
+<why>Flatten pours every branch into a single list.</why></drill>
+<drill id="s11-2"><q>The same tree goes through Flip Matrix. What comes out?</q>
+<o>3 branches of 4 items</o><o correct>4 branches of 3 items</o><o>One branch of 12 items</o>
+<why>Rows and columns swap. Branch {j} now holds item j of every original branch.</why></drill>
+<bug id="s11-b" def="bug_s11" answer="fl"><q>You expected three beam lines, one per floor, and got one zigzag line through every point. Click the component to remove.</q>
+<hint>Look at the Param Viewer. How many branches reach Polyline?</hint>
+<why>Flatten Tree pours the three floors into one list, so Polyline runs once and joins every point. Remove it and Polyline runs once per floor.</why></bug>
+<challenge id="s11-c" title="Beams and columns in two colours">
+<task><p>From a tree of nodes with one branch per floor, draw the beams in one colour and the columns in another.</p></task>
+<done><li>Beams: one polyline per floor.</li><li>Columns: one polyline per grid line.</li><li>Two Custom Preview colours.</li></done>
+<hint>Columns need the same node from every floor in one branch. Which tree operation gives that?</hint>
+<solution><ol><li>Polyline straight from the node tree for the beams.</li><li>Flip Matrix, then Polyline, for the columns.</li><li>Custom Preview (Display, Preview) on each, with a Colour Swatch.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s12">
+<drill id="s12-1"><q>Construct Point gets 5 X values as a plain list and 4 Z values grafted. What is the output?</q>
+<o>One branch of 5 points</o><o correct>4 branches of 5 points</o><o>5 branches of 4 points</o>
+<why>Each grafted Z value sits in its own branch, so the component runs 4 times, each time with all 5 X values.</why></drill>
+<drill id="s12-2"><q>A floor has 4 nodes. Line from the nodes to the same nodes shifted by 1, with Shortest List. How many beams?</q>
+<o correct>3</o><o>4</o><o>5</o>
+<why>4 nodes have 3 gaps between them. Shortest List drops the extra pairing at the end.</why></drill>
+<bug id="s12-b" def="bug_s12" answer="sz"><q>You wanted one branch of nodes per level, 4 levels of 4 nodes. The Param Viewer shows one branch of 4 points on a diagonal. Click the component whose output needs grafting.</q>
+<hint>Which list should give one branch per level?</hint>
+<why>Both Series reach Construct Point as plain lists, so Longest List pairs them item by item. Graft the Z Series output and you get 4 branches of 4 nodes.</why></bug>
+<challenge id="s12-c" title="An X brace in one bay on every floor">
+<task><p>Add X braces to the middle bay of every storey of your frame, using the node tree and no manual picking.</p></task>
+<done><li>Two braces per storey in the chosen bay.</li><li>Changing the storey count keeps the braces in that bay.</li></done>
+<hint>Flip Matrix gives one branch per grid line, with nodes from bottom to top.</hint>
+<hint>Tree Branch with paths {j} and {j + 1} gives two neighbouring grid lines. A brace runs from node i on one line to node i + 1 on the other.</hint>
+<solution><ol><li>Flip Matrix on the nodes. Tree Branch with {1} and {2} for the middle bay of a 3-bay frame.</li><li>Brace 1: Line from line {1} to line {2} shifted by 1 (Shift List, Wrap False, Shortest List).</li><li>Brace 2: the same with the two lines swapped.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s13">
+<drill id="s13-1"><q>Divide Curve on an arch with N = 8. How many points come out?</q>
+<o>8</o><o correct>9</o><o>16</o>
+<why>8 segments have 9 ends, including both supports.</why></drill>
+<drill id="s13-2"><q>The Expression is <code>4*f*x*(L-x)/L^2</code>. What does it return at x = L / 2?</q>
+<o correct>f, the rise</o><o>0</o><o>L / 2</o>
+<why>At mid-span 4 × f × (L/2) × (L/2) / L² = f. At both supports it returns 0.</why></drill>
+<bug id="s13-b" def="bug_s13" answer="dv"><q>The brief asks for hangers at equal spacing along the deck. Your hangers are vertical but bunch up near the supports. Click the component that needs a different input.</q>
+<hint>Which curve is being divided into equal lengths?</hint>
+<why>Divide Curve cuts the arch into equal arc lengths, which are not equal on the deck. Divide the deck line instead, then lift each point onto the arch with the same Expression you used to draw it.</why></bug>
+<challenge id="s13-c" title="A tied arch">
+<task><p>Build a tied arch: a parabolic arch, a straight tie at deck level, and vertical hangers at equal spacing along the deck, with sliders for span, rise and hanger count.</p></task>
+<done><li>Hangers are vertical and equally spaced on the deck.</li><li>Every hanger top lies exactly on the arch.</li></done>
+<hint>Divide the deck line, then compute each hanger's height with the parabola Expression.</hint>
+<solution><ol><li>Deck: Line from (0, 0, 0) to (L, 0, 0). Divide Curve, N = hanger count + 1.</li><li>Deconstruct Point gives x; Expression <code>4*f*x*(L-x)/L^2</code> gives z.</li><li>Construct Point (x, 0, z) for the arch nodes; Interpolate for the arch; Line from deck points to arch nodes for the hangers. Cull the first and last pair.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s14">
+<drill id="s14-1"><q>Unit Z with F = −10. What vector comes out?</q>
+<o correct>(0, 0, −10)</o><o>(0, 0, 1)</o><o>(−10, −10, −10)</o>
+<why>Unit Z points up with length 1. F scales it, and a negative F flips it.</why></drill>
+<drill id="s14-2"><q>Move gets a truss of 17 lines and 4 grafted vectors. What is the output?</q>
+<o>17 lines</o><o>4 lines</o><o correct>4 branches of 17 lines</o>
+<why>Each grafted vector runs separately against the whole truss: 4 complete copies.</why></drill>
+<bug id="s14-b" def="bug_s14" answer="mv|uy"><q>You wanted 4 copies of a 17-member truss. You got 17 lines scattered over 4 positions. Click the component with the port that needs Graft.</q>
+<hint>Look at how the vectors reach Move.</hint>
+<why>The vectors arrive as a plain list, so line 0 is paired with vector 0, line 1 with vector 1, and the rest with the last vector. Graft the T input of Move, or the V output of Unit Y.</why></bug>
+<challenge id="s14-c" title="Trusses on a falling roof">
+<task><p>Copy your truss 7 times along Y at 6 m, with each truss 50 mm lower than the one before, for a roof that falls towards one end.</p></task>
+<done><li>7 trusses, one branch each.</li><li>The last truss is 0.30 m below the first.</li></done>
+<hint>Vector XYZ (Vector, Vector) builds a vector from three numbers. Y is the spacing series and Z is the series times −0.05 / 6.</hint>
+<solution><def name="sol_s14"/><p>Use the Series index for the drop: multiply the Y distances by −0.05 / 6 so each 6 m step drops 50 mm. Graft the vectors into Move.</p></solution>
+</challenge>
+</practice>
+
+<practice for="s15">
+<drill id="s15-1"><q>Divide Surface with U = 6 and V = 4. How many points, and in how many branches?</q>
+<o>24 points in 6 branches</o><o correct>35 points in 7 branches</o><o>35 points in 1 branch</o>
+<why>U = 6 gives 7 positions and V = 4 gives 5, so 7 × 5 = 35, with one branch per U position.</why></drill>
+<drill id="s15-2"><q>A diagrid on a grid of 6 by 4 cells. How many members?</q>
+<o correct>48</o><o>24</o><o>70</o>
+<why>Two diagonals per cell: 6 × 4 × 2 = 48.</why></drill>
+<challenge id="s15-c" title="Edge beams for the barrel roof">
+<task><p>On your barrel roof, add edge beams along the two long edges, separate from the other ribs, so they can get a heavier section later.</p></task>
+<done><li>The edge beams are their own output, two curves.</li><li>Changing U or V keeps them on the edges.</li></done>
+<hint>The first and last branch of the Divide Surface tree are the two edges.</hint>
+<solution><ol><li>Check in a Param Viewer which way your branches run. If each branch is a line of points along the long edge, Tree Branch with the first and last path gives the two edges.</li><li>If the branches run across the roof instead, use Flip Matrix first.</li><li>Polyline through each edge branch.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s16">
+<drill id="s16-1"><q>You double the span of a simply supported beam under the same uniform load. What happens to the midspan deflection?</q>
+<o>It doubles</o><o>It goes up 4 times</o><o correct>It goes up 16 times</o>
+<why>Deflection is 5wL⁴/384EI, so it grows with L to the fourth power: 2⁴ = 16.</why></drill>
+<drill id="s16-2"><q>In which unit does Karamba's I-Profile expect its height and width?</q>
+<o>Millimetres</o><o correct>Centimetres</o><o>Metres</o>
+<why>Cross-section dimensions are in centimetres, while coordinates are in metres. Hover over a port to see its unit.</why></drill>
+<bug id="s16-b" def="bug_s16" answer="s1|s2"><q>Analyze is red and gives no result. Both supports have only Tz switched on. Click a component to fix.</q>
+<hint>Count the restraints. How many does a model in 3D need at least?</hint>
+<why>Two supports with Tz only give 2 restraints. The beam can slide in X and Y and spin, so the model is a mechanism. Use Tx, Ty, Tz and Rx at one end and Ty, Tz at the other.</why></bug>
+<challenge id="s16-c" title="Check a cantilever">
+<task><p>Model a 3 m cantilever in H-300×150×6.5×9 with a 10 kN point load at the tip. Compare Karamba's tip deflection with PL³/3EI.</p></task>
+<done><li>The fixed end has all six restraints and the tip has none.</li><li>Karamba's result is within a few percent of 0.61 cm.</li></done>
+<hint>PL³/3EI = 10 × 3³ / (3 × 14,781) m. EI for this section is in the Session {{n:s16}} example.</hint>
+<solution><ol><li>Line from (0, 0, 0) to (3, 0, 0), Line to Beam with the I-Profile.</li><li>Support at (0, 0, 0) with all six buttons on.</li><li>Point-Load at (3, 0, 0), force (0, 0, −10).</li><li>Hand value: 270 / 44,343 = 0.0061 m, about 0.61 cm.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s17">
+<drill id="s17-1"><q>In a Howe truss under gravity load, are the verticals in tension or compression?</q>
+<o correct>Tension</o><o>Compression</o><o>No force</o>
+<why>A Howe truss is the mirror of a Pratt: diagonals in compression and verticals in tension.</why></drill>
+<drill id="s17-2"><q>M = 360 kN·m at mid-span and the truss is 3 m deep. About how large is the chord force?</q>
+<o>1,080 kN</o><o correct>120 kN</o><o>360 kN</o>
+<why>The chords form a couple: N = M / H = 360 / 3 = 120 kN.</why></drill>
+<bug id="s17-b" def="bug_s17" answer="vec"><q>Your Pratt truss under roof load shows the top chord in tension and the bottom chord in compression. Click the component that causes it.</q>
+<hint>Which way does the load point?</hint>
+<why>The force vector points up, +10 in Z, so the truss is lifted and every force flips sign. Use (0, 0, −10).</why></bug>
+<challenge id="s17-c" title="Add self-weight">
+<task><p>Add the truss's own weight with a gravity load in the same load case, and find how much it adds to the largest chord force.</p></task>
+<done><li>A Gravity load with vector (0, 0, −1) is in load case 0.</li><li>You can say the chord force with and without self-weight.</li></done>
+<hint>Gravity is one of the load types in the Loads component. Karamba computes the weight from the cross sections and material.</hint>
+<solution><ol><li>Loads, set to Gravity, vector (0, 0, −1), LCase 0.</li><li>Merge it with the point loads into Assemble Model.</li><li>Compare Beam Forces N before and after. For light pipe trusses expect a few percent.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s18">
+<drill id="s18-1"><q>A portal on pinned bases carries P = 40 kN at beam level. The columns are 5 m tall. About how large is the column-top moment?</q>
+<o>200 kN·m</o><o correct>100 kN·m</o><o>40 kN·m</o>
+<why>Each column takes about P / 2 = 20 kN of shear, so M = 20 × 5 = 100 kN·m.</why></drill>
+<drill id="s18-2"><q>You change the bases from pinned to fixed. What happens to the sway?</q>
+<o correct>It gets smaller</o><o>It gets larger</o><o>It does not change</o>
+<why>Fixed bases add stiffness: each column is now restrained at both ends.</why></drill>
+<bug id="s18-b" def="bug_s18" answer="cs"><q>The portal sways about 22 mm by hand, but Karamba reports 0.002 cm. Click the component that causes it.</q>
+<hint>Check the units of the section dimensions.</hint>
+<why>Height 300 and width 150 are read as centimetres, so the section is 3 m deep and the frame is far too stiff. Enter 30 and 15.</why></bug>
+<challenge id="s18-c" title="A two-bay portal">
+<task><p>Extend the portal to two bays with a middle column. Under the same lateral load, compare the column-top moments in the outer and middle columns.</p></task>
+<done><li>Three columns, two beams, all rigidly connected.</li><li>You can say which column takes the largest moment, and why.</li></done>
+<hint>The middle column has a beam on both sides, so its top is restrained more than the outer columns.</hint>
+<solution><ol><li>Five points for the polyline: base A, top B, middle top M, top C, base D, plus a separate middle column line.</li><li>Supports at all three bases.</li><li>Expect the middle column to take the largest moment, roughly twice an outer one, because it is stiffer at its top.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s19">
+<drill id="s19-1"><q>What is the long-term allowable tensile stress for SN400 steel?</q>
+<o>235 N/mm²</o><o correct>156 N/mm²</o><o>400 N/mm²</o>
+<why>F = 235 N/mm², and the long-term allowable is F / 1.5 = 156.7, usually written 156.</why></drill>
+<drill id="s19-2"><q>A tension member carries 300 kN in H-200×100×5.5×8, A = 26.67 cm². What is its long-term 検定比?</q>
+<o correct>0.72</o><o>1.12</o><o>0.48</o>
+<why>σ = 300,000 / 2,667 = 112 N/mm², and 112 / 156 = 0.72.</why></drill>
+<challenge id="s19-c" title="A check table in one panel">
+<task><p>Show the worst 検定比 of each member group (top chord, bottom chord, verticals, diagonals) in one panel, one line per group.</p></task>
+<done><li>Four lines in a panel, each with the group name and its ratio.</li><li>The numbers update when you change a section.</li></done>
+<hint>Sort List followed by List Item with i = −1 gives the largest value in a list. Concatenate (Sets, Text) joins a name and a number.</hint>
+<solution><ol><li>Beam Forces N per group (Select Elements by Id, or Dispatch).</li><li>Division by area, Division by 156, then Sort List and List Item with i = −1 for the largest.</li><li>Format or Concatenate with the group name, then Merge the four texts into one panel.</li></ol></solution>
+</challenge>
+</practice>
+
+<practice for="s20">
+<drill id="s20-1"><q>The roof has 7 trusses with 6 panels each. How many truss members are there in total?</q>
+<o>168</o><o correct>175</o><o>42</o>
+<why>Each truss has 4 × 6 + 1 = 25 members, and 7 × 25 = 175.</why></drill>
+<drill id="s20-2"><q>The trusses are 6 m apart and the hall is 36 m long. How many trusses do you need, counting both gable ends?</q>
+<o>6</o><o correct>7</o><o>8</o>
+<why>36 / 6 = 6 bays, and 6 bays need 7 frames.</why></drill>
+</practice>
+
+<practice for="s21">
+<drill id="s21-1"><q>The roof load is 1.5 kN/m² and the trusses are 6 m apart. What is the line load on an inner truss?</q>
+<o correct>9 kN/m</o><o>1.5 kN/m</o><o>4.5 kN/m</o>
+<why>An inner truss collects 3 m from each side: 1.5 × 6 = 9 kN/m.</why></drill>
+<drill id="s21-2"><q>What line load does a gable-end truss carry, with the same numbers?</q>
+<o>9 kN/m</o><o correct>4.5 kN/m</o><o>18 kN/m</o>
+<why>An end truss only has roof on one side, so it collects half the strip: 1.5 × 3 = 4.5 kN/m.</why></drill>
+</practice>

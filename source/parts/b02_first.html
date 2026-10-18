@@ -1,0 +1,134 @@
+<!-- ================= FIRST DEFINITIONS ================= -->
+<section class="stage" id="first" data-stage="first">
+  <header>
+    <h2>First definitions</h2>
+    <p>Three sessions on the mechanics of the canvas: components, wires, sliders and panels. You finish with a portal frame whose span and height are two sliders.</p>
+  </header>
+
+  <article class="session" id="s4">
+    <h3><span class="sn">{{sn}}</span>Components, wires and sliders</h3>
+    <p class="goal">By the end you can read any small definition from left to right and say what each box does.</p>
+
+    <h4>Idea</h4>
+    <p>A component takes data in on the left, does one job, and gives data out on the right. A <b>Number Slider</b> makes a number. A <b>Panel</b>, the yellow note, shows whatever you wire into it. Use panels constantly: when you are not sure what a wire carries, plug it into a panel and read it.</p>
+    <p>The colour of a component is its status, and this page uses the same code.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Colour</th><th>Meaning in Grasshopper</th><th>What to do</th></tr></thead>
+        <tbody>
+          <tr><td>Light grey</td><td>Solved, no problems</td><td>Nothing</td></tr>
+          <tr><td>Orange</td><td>Warning. Most often an input has no data yet</td><td>Hover over the small balloon in the corner and read it</td></tr>
+          <tr><td>Red</td><td>Error. The component could not run</td><td>Read the balloon. Usually the wrong type of data went in</td></tr>
+          <tr><td>Green</td><td>Selected. Its preview in Rhino turns green too</td><td>Use it to find which box makes which geometry</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Example: a point and a line</h4>
+    <p>Two sliders set the X and Z of point B. Point A has nothing wired in, so it stays at the origin. <b>Line</b> joins them, <b>Length</b> measures the result, and a panel shows the number.</p>
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s4"></div>
+      <figcaption>Before you drag: with X = 3 and Z = 4, what will the panel show? Set the sliders and check.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Build the definition above. Find each component by double-clicking the canvas and typing its name.</li>
+      <li>Double-click the <b>name</b> of a slider to open its settings. Set the range to 0 to 10 and the rounding to one decimal.</li>
+      <li>Shortcut: double-click the canvas and type <code>0&lt;6&lt;12</code>. You get a slider from 0 to 12 already set to 6.</li>
+      <li>To unplug a wire, right-click the input and choose Disconnect. To plug a second wire into the same input, hold Shift while you drag.</li>
+    </ol>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Component</th><th>Find it under</th><th>Ports</th></tr></thead>
+        <tbody>
+          <tr><td>Number Slider</td><td>Params, Input</td><td>one output</td></tr>
+          <tr><td>Panel</td><td>Params, Input</td><td>one input, one output</td></tr>
+          <tr><td>Construct Point</td><td>Vector, Point</td><td>X, Y, Z in; Pt out</td></tr>
+          <tr><td>Line</td><td>Curve, Primitive</td><td>A, B in; L out</td></tr>
+          <tr><td>Length</td><td>Curve, Analysis</td><td>C in; L out</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s4-a" data-id="s4-a"><span>I predicted the 3, 4, 5 result before dragging the sliders</span></label></li>
+      <li><label><input type="checkbox" id="t-s4-b" data-id="s4-b"><span>I can say what grey, orange, red and green mean on a component</span></label></li>
+      <li><label><input type="checkbox" id="t-s4-c" data-id="s4-c"><span>I built the point and line definition in Grasshopper</span></label></li>
+      <li><label><input type="checkbox" id="t-s4-d" data-id="s4-d"><span>I can set a slider's range and I know the <code>0&lt;6&lt;12</code> shortcut</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="s5">
+    <h3><span class="sn">{{sn}}</span>A parametric portal frame</h3>
+    <p class="goal">By the end you have a portal frame (門形ラーメン) driven by a span slider and a height slider.</p>
+
+    <h4>Idea</h4>
+    <p>One slider can feed many inputs. That is the whole point of a parametric model: the span is stored once, and every point that depends on it follows. Here the span L goes to the X of two points and the height H goes to the Z of two points.</p>
+    <p>Build frames in the XZ plane, which is the Front view. Z is up, and the analysis plug-in applies gravity along Z.</p>
+
+    <h4>Example</h4>
+    <p>Four points: A at the left base, B at the left top, C at the right top, D at the right base. <b>Polyline</b> joins them in the order you wire them. <b>Explode</b> breaks the polyline back into three separate members, because an analysis needs one line per member. <b>Length</b> then returns three numbers, one per segment.</p>
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s5"></div>
+      <figcaption>The thick double wire after Explode is how Grasshopper draws a wire that carries a list, here three segments. A thin wire carries a single item.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Place four <b>Construct Point</b> components and two sliders. Wire L and H as in the figure. Leave Y empty on all four.</li>
+      <li>Place <b>Polyline</b>. Wire A into V, then hold Shift and wire B, C and D into the same input, in that order.</li>
+      <li>Add <b>Explode</b> and <b>Length</b>, and read the lengths in a panel.</li>
+      <li>Select everything, press Cmd + G to group it, and type a name on the group: <code>Portal frame geometry</code>.</li>
+    </ol>
+
+    <div class="watch">
+      <h4>Watch out: wiring order is list order</h4>
+      <p>When several wires enter one input, the data arrives in the order you connected them. Wire D before C and the polyline crosses itself. If a shape looks wrong, plug the input into a panel and check the order.</p>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s5-a" data-id="s5-a"><span>I can explain why L is wired to two points and H to two points</span></label></li>
+      <li><label><input type="checkbox" id="t-s5-b" data-id="s5-b"><span>I can tell a single-item wire from a list wire by how it is drawn</span></label></li>
+      <li><label><input type="checkbox" id="t-s5-c" data-id="s5-c"><span>I built the portal frame and it follows both sliders</span></label></li>
+      <li><label><input type="checkbox" id="t-s5-d" data-id="s5-d"><span>My definition is grouped and named</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="s6">
+    <h3><span class="sn">{{sn}}</span>Rhino geometry in, baked geometry out</h3>
+    <p class="goal">By the end you can bring a curve you drew in Rhino into a definition, and send Grasshopper's result back to Rhino on a layer.</p>
+
+    <h4>Idea</h4>
+    <p>Data crosses between the two windows in both directions. Going in, a <b>Curve</b> or <b>Point</b> parameter can <b>reference</b> an object in the Rhino model: move the object and the definition updates. Going out, <b>Bake</b> turns the red preview into real Rhino objects. Baked objects are a copy. They do not update when you move a slider afterwards.</p>
+    <p>At an office the usual pattern is: the architect's roof line or surface comes in by reference, your definition generates the structure on it, and you bake the result when a version is agreed.</p>
+
+    <h4>Example</h4>
+    <figure class="def">
+      <div data-def="ref"></div>
+      <figcaption>A referenced Rhino curve divided into 10 equal parts. The panel lists 11 points, numbered from 0. The coordinates shown are an example and depend on your curve.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>In the Front viewport, draw a gentle roof line about 24 m long with <code>Curve</code>.</li>
+      <li>In Grasshopper place a <b>Curve</b> parameter (Params, Geometry). Right-click it, choose Set one Curve, and click your roof line.</li>
+      <li>Wire it into <b>Divide Curve</b> (Curve, Division) with a slider on N. Red points appear along the line.</li>
+      <li>In Rhino, drag a control point of the roof line (turn them on with <code>PointsOn</code>). The points follow.</li>
+      <li>Right-click <b>Divide Curve</b>, choose Bake, pick a layer, and confirm. The points are now real Rhino points.</li>
+      <li>Right-click the Curve parameter and choose Internalise data. The curve now lives inside the <code>.gh</code> file and no longer needs the Rhino object.</li>
+    </ol>
+    <p>Keep definitions readable from the first day: inputs on the left, logic in the middle, results on the right, every stage in a named group. Double-click a wire to add a <b>Relay</b> when a long wire needs a bend. A colleague should be able to follow it without you.</p>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s6-a" data-id="s6-a"><span>I referenced a Rhino curve and saw the definition follow when I edited it</span></label></li>
+      <li><label><input type="checkbox" id="t-s6-b" data-id="s6-b"><span>I baked a result to a chosen layer</span></label></li>
+      <li><label><input type="checkbox" id="t-s6-c" data-id="s6-c"><span>I can explain the difference between referenced, internalised and baked geometry</span></label></li>
+    </ul>
+  </article>
+</section>

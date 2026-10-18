@@ -1,0 +1,153 @@
+<!-- ================= SET UP ================= -->
+<section class="stage" id="setup" data-stage="setup">
+  <header>
+    <h2>Set up</h2>
+    <p>One session to get Rhino running on your Mac and to see the Grasshopper canvas for the first time.</p>
+  </header>
+
+  <article class="session" id="s1">
+    <h3><span class="sn">{{sn}}</span>Install Rhino and meet the canvas</h3>
+    <p class="goal">By the end you have Rhino 8 running, the Grasshopper window open, and one red point on screen that you made with a component.</p>
+
+    <h4>Idea</h4>
+    <p>Rhino is a 3D modeller: you draw points, curves and surfaces at real size. Grasshopper is a second window that comes with Rhino. In it you do not draw. You place <b>components</b> and connect them with <b>wires</b>, and the result appears in Rhino as a red preview. Change a number and everything downstream updates. That chain of components is called a <b>definition</b>.</p>
+    <p>Two files hold your work: the Rhino model (<code>.3dm</code>) and the Grasshopper definition (<code>.gh</code>). For structural work the definition is the valuable one. It is the rule that makes the geometry, so one definition can produce a hundred variants of a roof.</p>
+
+    <h4>Example: install on your Mac</h4>
+    <ol class="steps">
+      <li>Download <a href="https://www.rhino3d.com/download/">Rhino 8 for Mac</a>. The evaluation is the full version and runs for 90 days. After that, saving and plug-ins stop until you buy a licence.</li>
+      <li>A student licence costs ¥39,600 in Japan and is the same program as the commercial one. One licence covers both Mac and Windows, so it moves with you to a Windows PC later. You need proof of student status.</li>
+      <li>Open Rhino and start a new model from the template <b>Large Objects - Meters</b>. This course works in metres because the analysis plug-in reads coordinates as metres.</li>
+      <li>Click in the command line, type <code>Grasshopper</code> and press Enter. The canvas opens in its own window.</li>
+    </ol>
+
+    <h4>In Rhino: your first component</h4>
+    <ol class="steps">
+      <li>Double-click an empty spot on the canvas. A search box appears. Type <code>Construct Point</code> and press Enter.</li>
+      <li>Look at the Rhino Perspective viewport. A small red point sits at the origin. Red means it is a Grasshopper preview, not a real Rhino object yet.</li>
+      <li>Double-click the canvas again, type <code>Number Slider</code>, press Enter. Drag from the slider's right edge to the <b>X</b> input of the point.</li>
+      <li>Drag the slider. The point moves along the red X axis.</li>
+    </ol>
+    <figure class="def">
+      <div data-def="first"></div>
+      <figcaption>What your canvas should look like. Inputs are on the left of a component, outputs on the right, and data flows left to right.</figcaption>
+    </figure>
+
+    <div class="watch">
+      <h4>Watch out: units in Japan</h4>
+      <p>Japanese structural drawings are in millimetres, and this course models in metres. Neither is wrong. What matters is that you know which one a file uses before you type a number. Type <code>Units</code> in Rhino to check.</p>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s1-a" data-id="s1-a"><span>Rhino 8 is installed and opens a model in metres</span></label></li>
+      <li><label><input type="checkbox" id="t-s1-b" data-id="s1-b"><span>I can open Grasshopper with the <code>Grasshopper</code> command</span></label></li>
+      <li><label><input type="checkbox" id="t-s1-c" data-id="s1-c"><span>I can place a component by double-clicking the canvas and typing its name</span></label></li>
+      <li><label><input type="checkbox" id="t-s1-d" data-id="s1-d"><span>I moved a red preview point with a slider</span></label></li>
+    </ul>
+  </article>
+</section>
+
+<!-- ================= RHINO ================= -->
+<section class="stage" id="rhino" data-stage="rhino">
+  <header>
+    <h2>Rhino, just enough</h2>
+    <p>Grasshopper produces Rhino geometry, so you need to move around a 3D model and know what a point, a curve and a surface are. Two sessions cover that. You do not need to become a Rhino modeller.</p>
+  </header>
+
+  <article class="session" id="s2">
+    <h3><span class="sn">{{sn}}</span>Move around and draw in 3D</h3>
+    <p class="goal">By the end you can orbit, pan and zoom without thinking, and draw a line by typing coordinates.</p>
+
+    <h4>Idea</h4>
+    <p>Rhino shows four viewports: <b>Top</b>, <b>Front</b>, <b>Right</b> and <b>Perspective</b>. Top looks down the Z axis, so it is your plan (伏図). Front looks along Y, so it is your elevation or frame view (軸組図). Z is up. Double-click a viewport's name to make it fill the window, and again to go back.</p>
+    <p>You work by typing command names. Type <code>Line</code>, press Enter, then answer the prompts. A point is typed as <code>x,y,z</code>. A point relative to the last one starts with <code>r</code>, so <code>r0,0,3.5</code> means 3.5 m straight up from where you were.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>To do this</th><th>Mouse</th><th>Trackpad</th></tr></thead>
+        <tbody>
+          <tr><td>Orbit in Perspective</td><td>Right-button drag</td><td>Two-finger drag</td></tr>
+          <tr><td>Pan in Perspective</td><td>Shift + right-button drag</td><td>Shift + two-finger drag</td></tr>
+          <tr><td>Pan in Top, Front, Right</td><td>Right-button drag</td><td>Two-finger drag</td></tr>
+          <tr><td>Zoom</td><td>Scroll wheel</td><td>Pinch</td></tr>
+          <tr><td>Fit everything in view</td><td colspan="2">Type <code>ZE</code> (Zoom Extents)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>If two-finger drag does nothing on your trackpad, open Rhino's settings, go to Trackpad, and turn on <b>Use two fingers to pan and rotate views</b>.</p>
+
+    <h4>Coming from Jw_cad</h4>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>In Jw_cad</th><th>In Rhino</th></tr></thead>
+        <tbody>
+          <tr><td>You draw in 2D on a sheet at a scale (<span lang="ja">縮尺</span>)</td><td>You model in 3D at real size. Scale only matters when you print</td></tr>
+          <tr><td>Commands come from the toolbar and the <span lang="ja">クロックメニュー</span></td><td>Commands are typed: <code>Line</code>, <code>Move</code>, <code>Copy</code></td></tr>
+          <tr><td>Right-click reads an existing point (<span lang="ja">読取点</span>)</td><td>Osnap does it: End, Mid, Int, Perp, switched on at the bottom of the window</td></tr>
+          <tr><td>Layer groups and layers, 16 by 16</td><td>One Layers panel with as many named layers as you like</td></tr>
+          <tr><td>The drawing is the product</td><td>The model is the product, and drawings are made from it</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>In Rhino: a column grid by hand</h4>
+    <ol class="steps">
+      <li>Maximise the Top viewport. Type <code>Point</code> and enter <code>0,0,0</code>. Repeat for <code>6,0,0</code>, <code>12,0,0</code>, then the same three at Y = 8: <code>0,8,0</code>, <code>6,8,0</code>, <code>12,8,0</code>. That is a grid of 2 bays by 1 bay, 6 m by 8 m.</li>
+      <li>Type <code>Line</code>, start at <code>0,0,0</code>, end at <code>r0,0,3.5</code>. You have one column (柱), 3.5 m tall.</li>
+      <li>Select the line, type <code>Copy</code>, and copy it to the other five points.</li>
+      <li>Switch to Perspective, orbit around it, then type <code>ZE</code>.</li>
+    </ol>
+    <p>Notice how slow that was for six columns. In Session {{n:s8}} Grasshopper makes the same grid for any number of bays with five components.</p>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s2-a" data-id="s2-a"><span>I can orbit, pan and zoom in Perspective without looking it up</span></label></li>
+      <li><label><input type="checkbox" id="t-s2-b" data-id="s2-b"><span>I know which viewport is the plan and which is the elevation</span></label></li>
+      <li><label><input type="checkbox" id="t-s2-c" data-id="s2-c"><span>I drew a line by typing absolute and relative coordinates</span></label></li>
+      <li><label><input type="checkbox" id="t-s2-d" data-id="s2-d"><span>I built the six-column grid by hand</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="s3">
+    <h3><span class="sn">{{sn}}</span>Objects, units, snaps and layers</h3>
+    <p class="goal">By the end you can name the five kinds of geometry Grasshopper passes around, and you know why two nodes half a millimetre apart are a problem.</p>
+
+    <h4>Idea</h4>
+    <p>Everything Grasshopper makes is one of a few Rhino object types. Each has a structural meaning.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Rhino object</th><th>What it is</th><th>What it stands for in a structure</th></tr></thead>
+        <tbody>
+          <tr><td>Point</td><td>A position x, y, z</td><td>A node (節点), a support, a load position</td></tr>
+          <tr><td>Curve</td><td>A line, polyline, arc or free curve</td><td>A member centre line (部材芯): beam, column, brace</td></tr>
+          <tr><td>Surface</td><td>A smooth sheet with two directions, U and V</td><td>A slab, wall or shell before meshing</td></tr>
+          <tr><td>Brep</td><td>Surfaces joined into a solid or shell</td><td>A member drawn with its real section</td></tr>
+          <tr><td>Mesh</td><td>Flat faces joined at vertices</td><td>Shell elements for analysis</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>A structural model is mostly points and lines. Two members are connected only when their end points are at the same place. Rhino decides "the same place" with the document <b>tolerance</b>, which you see with the <code>Units</code> command. With metres, a tolerance of 0.001 means 1 mm.</p>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Type <code>Units</code>. Confirm the model units are metres and read the absolute tolerance.</li>
+      <li>Turn on <b>Osnap</b> at the bottom of the window and tick End, Mid and Int. Draw a line (<code>Line</code>) from the top of one column to the top of the next. The cursor should jump to the end point. That is a girder (大梁).</li>
+      <li>Open the Layers panel (<code>Layer</code>). Make three layers named <code>C</code>, <code>G</code> and <code>Grid</code>, each with its own colour. Select the columns and move them to <code>C</code>, the girders to <code>G</code>, the points to <code>Grid</code>.</li>
+      <li>Select a girder and turn on the <b>Gumball</b>. Drag the blue arrow to move it in Z. Undo it.</li>
+    </ol>
+
+    <div class="watch">
+      <h4>Watch out: nodes that almost touch</h4>
+      <p>If you draw a beam without Osnap and its end lands 0.5 mm from the column top, it looks connected and is not. The analysis sees two separate nodes and the beam hangs in the air. Geometry made by Grasshopper avoids this because both members are built from the same point.</p>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s3-a" data-id="s3-a"><span>I can say what a point, curve, surface, brep and mesh stand for in a structure</span></label></li>
+      <li><label><input type="checkbox" id="t-s3-b" data-id="s3-b"><span>I checked the units and tolerance of my model</span></label></li>
+      <li><label><input type="checkbox" id="t-s3-c" data-id="s3-c"><span>I drew a girder that snaps exactly to two column tops</span></label></li>
+      <li><label><input type="checkbox" id="t-s3-d" data-id="s3-d"><span>My columns and girders are on separate named layers</span></label></li>
+    </ul>
+  </article>
+</section>
+

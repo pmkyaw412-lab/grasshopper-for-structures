@@ -1,0 +1,76 @@
+<header class="bar">
+  <div class="wrap">
+    <a class="name" href="#top">Grasshopper for Structures</a>
+    <div class="right">
+      <p class="prog"><b id="prog-n">0</b>/<span id="prog-t">0</span> steps<span class="sep"></span><b id="drill-n">0</b>/<span id="drill-t">0</span> exercises<span class="save" id="save-state">Saved in this browser</span></p>
+      <button class="auth" id="auth-btn" type="button" hidden>Sign in</button>
+      <a class="cont" id="cont" href="#setup">Start the course</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <h1>Grasshopper for structural engineers</h1>
+      <p class="lede">{{count}} two-hour sessions, about {{months}} months at one session a week. You start by placing one slider and finish with design studies that an office like Arup or KKE might hand a new engineer.</p>
+      <ul class="facts">
+        <li><b>{{count}}</b> sessions</li>
+        <li><b>2 hours</b> each</li>
+        <li><b>{{sims}}</b> live examples</li>
+      </ul>
+      <p class="note hero-note"><b>The definition beside this note is live.</b> Drag a slider and the truss is rebuilt and solved in your browser. The two boxes marked cluster stand in for about twenty components, which you wire yourself in Sessions {{n:s9}} and {{n:s17}}.</p>
+    </div>
+    <figure class="def">
+      <div class="sim" data-sim="hero"></div>
+    </figure>
+  </div>
+</section>
+
+<div class="wrap layout">
+<nav class="rail" aria-label="Course stages">
+  <div class="chain">
+    <ol>
+      <li><a href="#setup" data-stage="setup"><span class="plate">Set up</span><span class="cnt"></span></a></li>
+      <li><a href="#rhino" data-stage="rhino"><span class="plate">Rhino, just enough</span><span class="cnt"></span></a></li>
+      <li><a href="#first" data-stage="first"><span class="plate">First definitions</span><span class="cnt"></span></a></li>
+      <li><a href="#lists" data-stage="lists"><span class="plate">Lists</span><span class="cnt"></span></a></li>
+      <li><a href="#trees" data-stage="trees"><span class="plate">Data trees</span><span class="cnt"></span></a></li>
+      <li><a href="#geometry" data-stage="geometry"><span class="plate">Geometry</span><span class="cnt"></span></a></li>
+      <li><a href="#form" data-stage="form"><span class="plate">Design with data</span><span class="cnt"></span></a></li>
+      <li><a href="#analysis" data-stage="analysis"><span class="plate">Structural analysis</span><span class="cnt"></span></a></li>
+      <li><a href="#members" data-stage="members"><span class="plate">Member design</span><span class="cnt"></span></a></li>
+      <li><a href="#optimise" data-stage="optimise"><span class="plate">Optimisation</span><span class="cnt"></span></a></li>
+      <li><a href="#formfinding" data-stage="formfinding"><span class="plate">Form-finding</span><span class="cnt"></span></a></li>
+      <li><a href="#capstone" data-stage="capstone"><span class="plate">Projects</span><span class="cnt"></span></a></li>
+    </ol>
+  </div>
+  <p class="key"><span class="k-w"></span>Orange is waiting for data, as in Grasshopper. <span class="k-d"></span>Grey is solved: every step ticked. <span class="k-s"></span>Green is selected: where you are now.</p>
+</nav>
+
+<main>
+
+<section class="stage" id="how">
+  <header>
+    <h2>How to use this course</h2>
+    <p>Every session follows the same order. Work through it from the top, then tick the checklist at the end. Your ticks and answers are saved.</p>
+  </header>
+  <div class="tbl" style="margin-top:20px">
+    <table>
+      <thead><tr><th>Part</th><th>What you do</th><th>Where</th></tr></thead>
+      <tbody>
+        <tr><td>Idea</td><td>Read one concept, in plain words</td><td>This page</td></tr>
+        <tr><td>Example</td><td>Follow a structural example step by step</td><td>This page</td></tr>
+        <tr><td>Try it here</td><td>Drag sliders on a live definition and predict what happens</td><td>This page</td></tr>
+        <tr><td>In Rhino</td><td>Build the same thing yourself in Grasshopper</td><td>Your Mac</td></tr>
+        <tr><td>Predict</td><td>Answer short questions before you check in Rhino</td><td>This page</td></tr>
+        <tr><td>Fix the bug</td><td>Click the component that causes a broken result</td><td>This page</td></tr>
+        <tr><td>Build challenge</td><td>Build something new, with hints and a hidden solution</td><td>Your Mac</td></tr>
+        <tr><td>Checklist</td><td>Tick each thing you can now do without looking</td><td>This page</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:18px;max-width:68ch">Until Rhino is installed you can still do the reading, the live examples and the Predict and Fix the bug exercises in every session. Open a build challenge's solution only after you have tried it. Japanese terms you will hear at a design office are given in brackets after the English, and collected in the <a href="#glossary">glossary</a>.</p>
+  <p style="margin-top:12px;max-width:68ch">The last stage, Projects, works like a small office job. Each project has a brief, a list of what to hand in, and a comparison table (比較検討表) that ranks your options from the numbers you get in Rhino.</p>
+</section>
+

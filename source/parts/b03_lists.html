@@ -1,0 +1,159 @@
+<!-- ================= LISTS ================= -->
+<section class="stage" id="lists" data-stage="lists">
+  <header>
+    <h2>Lists</h2>
+    <p>A structure is repetition: columns on a grid, panels in a truss, floors in a frame. In Grasshopper repetition means lists. These three sessions are where the tool starts saving you time.</p>
+  </header>
+
+  <article class="session" id="s7">
+    <h3><span class="sn">{{sn}}</span>Making and reading lists</h3>
+    <p class="goal">By the end you can generate a row of evenly spaced points and pick any one of them by its index.</p>
+
+    <h4>Idea</h4>
+    <p>A list is an ordered set of items, numbered from <b>0</b>. Most components do not care whether they receive one item or fifty. Give <b>Construct Point</b> a list of four X values and it makes four points. You never write a loop.</p>
+    <p><b>Series</b> is the list maker you will use most: a start value S, a step N and a count C. For column lines at 6 m centres, that is start 0, step 6, count 4, which gives 0, 6, 12, 18.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s7"></div>
+      <figcaption>The number above each point is its index. A panel shows the index in the left column. With 4 points the last index is 3, not 4.</figcaption>
+    </figure>
+
+    <h4>Example: components for working on a list</h4>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Component</th><th>Find it under</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>Series</td><td>Sets, Sequence</td><td>Start, step, count</td></tr>
+          <tr><td>Range</td><td>Sets, Sequence</td><td>Splits a domain into N steps, so N + 1 values</td></tr>
+          <tr><td>List Item</td><td>Sets, List</td><td>Returns the item at index i</td></tr>
+          <tr><td>List Length</td><td>Sets, List</td><td>How many items</td></tr>
+          <tr><td>Reverse List</td><td>Sets, List</td><td>Last becomes first</td></tr>
+          <tr><td>Shift List</td><td>Sets, List</td><td>Slides the items along by S places</td></tr>
+          <tr><td>Cull Pattern</td><td>Sets, Sequence</td><td>Keeps or drops items by a repeating true, false pattern</td></tr>
+          <tr><td>Dispatch</td><td>Sets, List</td><td>Sorts items into two lists by a pattern</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Build Series into Construct Point as in the figure, and read the points in a panel.</li>
+      <li>Add <b>List Item</b>. Wire the points into L and a slider into i. One point turns up as its output. Select List Item to see it highlighted green in Rhino.</li>
+      <li>Set i to 5 with only 4 points. List Item quietly returns index 1, the second point, because its Wrap input W is True by default and the index wraps round. Wire a Boolean Toggle set to False into W and set i to 5 again: now List Item returns nothing, which is easier to notice.</li>
+      <li>Add <b>Cull Pattern</b> with a panel containing <code>True</code> and <code>False</code> on two lines wired into P. Every second point disappears.</li>
+    </ol>
+
+    <details class="qa">
+      <summary>Check yourself: Range from 0 to 24 with N = 4 gives how many values?</summary>
+      <p>Five: 0, 6, 12, 18, 24. N is the number of steps, and a span cut into 4 steps has 5 ends. Series counts items, Range counts gaps. Mixing them up gives you one node too many or too few.</p>
+    </details>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s7-a" data-id="s7-a"><span>I know that list indices start at 0</span></label></li>
+      <li><label><input type="checkbox" id="t-s7-b" data-id="s7-b"><span>I can make evenly spaced points with Series</span></label></li>
+      <li><label><input type="checkbox" id="t-s7-c" data-id="s7-c"><span>I can pick one item with List Item</span></label></li>
+      <li><label><input type="checkbox" id="t-s7-d" data-id="s7-d"><span>I can explain the difference between Series and Range</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="s8">
+    <h3><span class="sn">{{sn}}</span>Data matching</h3>
+    <p class="goal">By the end you can predict what a component does when its inputs are lists of different lengths. This one rule explains most surprises in Grasshopper.</p>
+
+    <h4>Idea</h4>
+    <p>Suppose X receives 4 values and Y receives 3. Which X goes with which Y? Grasshopper has three answers.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Rule</th><th>What happens</th><th>4 and 3 items give</th></tr></thead>
+        <tbody>
+          <tr><td>Longest List (the default)</td><td>Pair item by item. When the short list runs out, reuse its last item</td><td>4 results</td></tr>
+          <tr><td>Shortest List</td><td>Pair item by item. Stop when the short list runs out</td><td>3 results</td></tr>
+          <tr><td>Cross Reference</td><td>Pair every item with every item</td><td>12 results</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Longest List is built into every component. For the other two you place a <b>Shortest List</b> or <b>Cross Reference</b> component (both under Sets, List) in front of the inputs.</p>
+
+    <h4>Example: the column grid</h4>
+    <p>You want a column at every crossing of 4 grid lines in X and 3 in Y (通り芯). Wire the two Series straight into Construct Point and you get 4 points on a diagonal, because of Longest List. Put Cross Reference in between and you get the 12 you wanted.</p>
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s8"></div>
+      <figcaption>Dashed rings mark every grid crossing. Solid points are what the definition actually makes. Change the rule in the dark box.</figcaption>
+    </figure>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Make two Series: step 6 with count 4, and step 8 with count 3.</li>
+      <li>Wire them straight into X and Y of Construct Point. Count the points.</li>
+      <li>Insert <b>Cross Reference</b> between them. Count again.</li>
+      <li>Add a third Series for Z with step 3.5 and count 2, then zoom in on Cross Reference until a small plus sign appears, and click it to add a third input. You now have the node grid of a one-storey frame.</li>
+    </ol>
+
+    <div class="watch">
+      <h4>Watch out: the silent repeat</h4>
+      <p>Longest List never warns you. The component stays grey and the result looks plausible. Whenever a result has the wrong number of items, compare the lengths of the lists going in.</p>
+    </div>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s8-a" data-id="s8-a"><span>I can predict the number of results for each of the three rules</span></label></li>
+      <li><label><input type="checkbox" id="t-s8-b" data-id="s8-b"><span>I know Longest List is the default and that it reuses the last item</span></label></li>
+      <li><label><input type="checkbox" id="t-s8-c" data-id="s8-c"><span>I built a column grid with Cross Reference</span></label></li>
+    </ul>
+  </article>
+
+  <article class="session" id="s9">
+    <h3><span class="sn">{{sn}}</span>A truss from two lists</h3>
+    <p class="goal">By the end you have a parallel-chord truss (平行弦トラス) built from lists, and you know the trick that connects node i to node i + 1.</p>
+
+    <h4>Idea</h4>
+    <p>A truss is two rows of nodes and four sets of lines between them: bottom chord (下弦材), top chord (上弦材), verticals (束材) and diagonals (斜材). Each set is one <b>Line</b> component fed with two lists.</p>
+    <ul>
+      <li>Verticals: bottom node i to top node i. Same index, so wire the two lists straight in.</li>
+      <li>Chords: node i to node i + 1 in the same row.</li>
+      <li>Diagonals: bottom node i to top node i + 1.</li>
+    </ul>
+    <p>"i + 1" is what <b>Shift List</b> does. It slides a list along by S places, so item 1 moves to position 0, item 2 to position 1, and so on. Pair the original list with the shifted one and each node meets its neighbour.</p>
+
+    <h4>Try it here</h4>
+    <figure class="def">
+      <div class="sim" data-sim="s9"></div>
+      <figcaption>Six bottom nodes and six top nodes, numbered 0 to 5. Find the two settings that give clean diagonals and clean chord segments.</figcaption>
+    </figure>
+
+    <h4>Example: the full truss</h4>
+    <ol class="steps">
+      <li>Bottom nodes: Series (start 0, step L / n, count n + 1) into the X of Construct Point.</li>
+      <li>Top nodes: <b>Move</b> the bottom nodes by a <b>Unit Z</b> vector with the depth H as its factor.</li>
+      <li>Verticals: Line with A = bottom, B = top.</li>
+      <li>Bottom chord: Line with A = bottom, B = bottom through Shift List (S = 1, Wrap = False), with Shortest List in front.</li>
+      <li>Top chord: the same with the top nodes.</li>
+      <li>Diagonals: Line with A = bottom, B = top through Shift List, again with Shortest List.</li>
+    </ol>
+    <p>That gives diagonals that all lean the same way. For a Pratt truss they must run down towards midspan in both halves, mirrored at the centre. Split the node lists at midspan with <b>Split List</b>, build each half, and shift the bottom list in one half and the top list in the other.</p>
+
+    <div class="watch">
+      <h4>Watch out: Wrap is on by default</h4>
+      <p>Shift List has a Wrap input that is True unless you change it. With Wrap on, the item pushed off the front returns at the back, and your last node gets connected to the first. Set it to False with a <b>Boolean Toggle</b>.</p>
+    </div>
+
+    <h4>In Rhino</h4>
+    <ol class="steps">
+      <li>Build the six steps above with three sliders: span L, depth H and panels n. Use <b>Division</b> for L / n and <b>Addition</b> for n + 1.</li>
+      <li>Check the member count in a panel. A truss with n panels has 4n + 1 members.</li>
+      <li>Group each member set and name it. You will need them separately when you assign sections.</li>
+    </ol>
+
+    <h4>Checklist</h4>
+    <ul class="ticks">
+      <li><label><input type="checkbox" id="t-s9-a" data-id="s9-a"><span>I can explain how Shift List connects node i to node i + 1</span></label></li>
+      <li><label><input type="checkbox" id="t-s9-b" data-id="s9-b"><span>I found the stray line caused by Wrap and the one caused by Longest List</span></label></li>
+      <li><label><input type="checkbox" id="t-s9-c" data-id="s9-c"><span>I built a truss with span, depth and panel sliders</span></label></li>
+      <li><label><input type="checkbox" id="t-s9-d" data-id="s9-d"><span>My truss has exactly 4n + 1 members</span></label></li>
+    </ul>
+  </article>
+</section>
+
